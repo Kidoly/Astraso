@@ -17,11 +17,11 @@ class Hashtagpc
     private ?comment $comment = null;
 
     #[ORM\ManyToOne(inversedBy: 'hashtagpcs')]
-    private ?post $post = null;
+    private ?Post $post = null;
 
     #[ORM\ManyToOne(inversedBy: 'hashtagpcs')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?hashtag $hashtag = null;
+    private ?Hashtag $hashtag = null;
 
     public function getId(): ?int
     {

@@ -50,12 +50,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Institution $institution = null;
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    public \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
     }
+
+    
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;

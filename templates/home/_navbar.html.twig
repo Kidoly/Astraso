@@ -1,59 +1,37 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-<nav class="navbar">
-    
-    <div class="navbar-brand">
-        <a class="navbar-item" href="{{ path('app_login') }}">
-            {% if app.user.userIdentifier %}
-            <img src="data:images/default;base64,{{ app.user.image.image}}" alt="Profile Image">
-        </tr>
-            {% else %}
-                <img src="{{ asset('images/default-profile-image.jpg') }}" alt="Profile Image">
-            {% endif %}
-        </a>
-    </div>    
-        <div class="navbar-start">
-            <div class="navbar-item navbar-item-search">
-                <form class="navbar-form" action="{{ path('app_login') }}" method="GET">
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input class="input" type="text" name="query" placeholder="Search">
-                        </div>
-                        <div class="control">
-                            <button class="button" type="submit">Go</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="navbar-end">
-            <div class="navbar-item">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid"> <!-- Ajout de la classe container-fluid -->
+        <!-- Élément à gauche -->
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand" href="{{ path('app_login') }}">
                 {% if app.user.userIdentifier %}
-                    <a class="button is-primary" href="{{ path('app_logout') }}">Déconnexion</a>
+                    <img src="data:images/default;base64,{{ app.user.image }}" alt="Profile Image">
                 {% else %}
-                    <a class="button is-primary" href="{{ path('app_login') }}">Connexion</a>
+                    <img src="{{ asset('images/default-profile-image.jpg') }}" alt="Profile Image">
                 {% endif %}
-            </div>
+            </a>
         </div>
+
+        <!-- Élément central -->
+        <div class="d-flex align-items-center justify-content-center">
+            <form class="form-inline d-flex" action="{{ path('app_login') }}" method="GET">
+                <input class="form-control m-1" type="text" name="query" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-primary m-1" type="submit">Go</button>
+            </form>
+        </div>
+        
+
+
+        <!-- Élément à droite -->
+        <div class="d-flex align-items-center ml-auto">
+            {% if app.user.userIdentifier %}
+                <a class="btn btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
+            {% endif %}
+        </div>
+    </div>
 </nav>
-
-<style>
-    .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
-
-    .navbar-item-search {
-        margin: 0 auto; /* pour centrer le formulaire de recherche */
-    }
-
-    .field {
-        display: flex;
-        align-items: center;
-    }
-</style>
-
 {% endblock %}
