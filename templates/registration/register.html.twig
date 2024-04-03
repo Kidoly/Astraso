@@ -9,15 +9,30 @@
 
     <h1>Register</h1>
 
-    {{ form_errors(registrationForm) }}
+    <div class="container" style="padding: 20px;">
+        {{ form_errors(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        {{ form_start(registrationForm) }}
+            {{ form_row(registrationForm.username, {
+                'attr': {'class': 'form-control'}
+            }) }}
+            {{ form_row(registrationForm.email, {
+                'attr': {'class': 'form-control'}
+            }) }}
+            {{ form_row(registrationForm.plainPassword, {
+                'label': 'Password',
+                'attr': {'class': 'form-control'}
+            }) }}
+            {{ form_row(registrationForm.agreeTerms, {
+                'attr': {'class': 'form-check-input'}
+            }) }}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+            <button type="submit" class="btn btn-primary">Register</button>
+        {{ form_end(registrationForm) }}
+
+        <button type="submit" class="btn" id="register-button" style="background-color: var(--secondary-color);">
+            <a href="{{ path('app_login') }}" style="color: black;">Already have an account?</a>
+        </button>
+            
+    </div>
 {% endblock %}
