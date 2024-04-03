@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<nav class="navbar">
+    
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ path('app_login') }}">
+            {% if app.user.userIdentifier %}
+            <img src="data:images/default;base64,{{ app.user.image.image}}" alt="Profile Image">
+        </tr>
+            {% else %}
+                <img src="{{ asset('images/default-profile-image.jpg') }}" alt="Profile Image">
+            {% endif %}
+        </a>
+    </div>    
+        <div class="navbar-start">
+            <div class="navbar-item navbar-item-search">
+                <form class="navbar-form" action="{{ path('app_login') }}" method="GET">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input class="input" type="text" name="query" placeholder="Search">
+                        </div>
+                        <div class="control">
+                            <button class="button" type="submit">Go</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                {% if app.user.userIdentifier %}
+                    <a class="button is-primary" href="{{ path('app_logout') }}">Déconnexion</a>
+                {% else %}
+                    <a class="button is-primary" href="{{ path('app_login') }}">Connexion</a>
+                {% endif %}
+            </div>
+        </div>
+</nav>
+
+<style>
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .navbar-item-search {
+        margin: 0 auto; /* pour centrer le formulaire de recherche */
+    }
+
+    .field {
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+{% endblock %}
