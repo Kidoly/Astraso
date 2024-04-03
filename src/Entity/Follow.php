@@ -18,13 +18,13 @@ class Follow
     private ?User $following_user = null;
 
     #[ORM\ManyToOne(inversedBy: 'follows')]
-    private ?user $followed_user = null;
+    private ?User $followed_user = null;
 
     #[ORM\ManyToOne(inversedBy: 'follows')]
-    private ?institution $institution = null;
+    private ?Institution $institution = null;
 
     #[ORM\ManyToOne(inversedBy: 'follows')]
-    private ?hashtag $hashtag = null;
+    private ?Hashtag $hashtag = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -46,36 +46,36 @@ class Follow
         return $this;
     }
 
-    public function getFollowedUser(): ?user
+    public function getFollowedUser(): ?User
     {
         return $this->followed_user;
     }
 
-    public function setFollowedUser(?user $followed_user): static
+    public function setFollowedUser(?User $followed_user): static
     {
         $this->followed_user = $followed_user;
 
         return $this;
     }
 
-    public function getInstitution(): ?institution
+    public function getInstitution(): ?Institution
     {
         return $this->institution;
     }
 
-    public function setInstitution(?institution $institution): static
+    public function setInstitution(?Institution $institution): static
     {
         $this->institution = $institution;
 
         return $this;
     }
 
-    public function getHashtag(): ?hashtag
+    public function getHashtag(): ?Hashtag
     {
         return $this->hashtag;
     }
 
-    public function setHashtag(?hashtag $hashtag): static
+    public function setHashtag(?Hashtag $hashtag): static
     {
         $this->hashtag = $hashtag;
 

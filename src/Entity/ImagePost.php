@@ -15,35 +15,35 @@ class ImagePost
 
     #[ORM\ManyToOne(inversedBy: 'imagePosts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?image $image = null;
+    private ?Image $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'imagePosts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?post $post = null;
+    private ?Post $post = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getImage(): ?image
+    public function getImage(): ?Image
     {
         return $this->image;
     }
 
-    public function setImage(?image $image): static
+    public function setImage(?Image $image): static
     {
         $this->image = $image;
 
         return $this;
     }
 
-    public function getPost(): ?post
+    public function getPost(): ?Post
     {
         return $this->post;
     }
 
-    public function setPost(?post $post): static
+    public function setPost(?Post $post): static
     {
         $this->post = $post;
 
