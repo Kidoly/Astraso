@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Institution index{% endblock %}
+
+{% block body %}
+    <h1>Institution index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Postal_code</th>
+                <th>Address</th>
+                <th>Accepted</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for institution in institutions %}
+            <tr>
+                <td>{{ institution.id }}</td>
+                <td>{{ institution.name }}</td>
+                <td>{{ institution.postalCode }}</td>
+                <td>{{ institution.address }}</td>
+                <td>{{ institution.accepted ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_institution_show', {'id': institution.id}) }}">show</a>
+                    <a href="{{ path('app_institution_edit', {'id': institution.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_institution_new') }}">Create new</a>
+{% endblock %}
