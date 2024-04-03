@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Follow;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
@@ -25,26 +26,14 @@ class UserController extends AbstractController
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        // Code for creating a new user
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
+        // Check if the current user is the owner of the user entity
+        
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
@@ -53,28 +42,39 @@ class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        // Check if the current user is the owner of the user entity
+        if ($user !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Access Denied');
         }
 
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        // Code for editing the user
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($user);
-            $entityManager->flush();
+        // Check if the current user is the owner of the user entity
+        if ($user !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Access Denied');
         }
+
+        // Code for deleting the user
+    }
+
+    # Method for following a user
+    #[Route('/{id}/follow', name: 'app_user_follow', methods: ['GET'])]
+    public function follow(User $user, EntityManagerInterface $entityManager, Follow $follow): Response
+    {
+        $follow->setFollowingUser($this->getUser());
+
+        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    # Method for unfollowing a user
+    #[Route('/{id}/unfollow', name: 'app_user_unfollow', methods: ['GET'])]
+    public function unfollow(User $user, EntityManagerInterface $entityManager, Follow $follow): Response
+    {
+        $follow->setFollowingUser($this->getUser());
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }

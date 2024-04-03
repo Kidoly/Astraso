@@ -6,8 +6,10 @@ use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
@@ -49,15 +51,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne]
     private ?Institution $institution = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     public \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
     }
-
-    
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
@@ -164,12 +164,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getImage(): ?image
+    public function getImage(): ?Image
     {
         return $this->image;
     }
 
-    public function setImage(?image $image): static
+    public function setImage(?Image $image): static
     {
         $this->image = $image;
 
@@ -188,12 +188,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getInstitution(): ?institution
+    public function getInstitution(): ?Institution
     {
         return $this->institution;
     }
 
-    public function setInstitution(?institution $institution): static
+    public function setInstitution(?Institution $institution): static
     {
         $this->institution = $institution;
 
@@ -220,6 +220,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+
+    public function getFollows(): Collection
+    {
+        return $this->follows;
+    }
+
+    public function addFollow(Follow $follow): static
+    {
+        if (!$this->follows->contains($follow)) {
+            $this->follows->add($follow);
+            $follow->setFollowingUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFollow(Follow $follow): static
+    {
+        if ($this->follows->removeElement($follow)) {
+            // set the owning side to null (unless already changed)
+            if ($follow->getFollowingUser() === $this) {
+                $follow->setFollowingUser(null);
+            }
+        }
 
         return $this;
     }

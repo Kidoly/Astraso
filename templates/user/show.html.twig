@@ -1,58 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
+{% block title %}User Profile{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">User Profile</div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Username</th>
-                <td>{{ user.username }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>First_name</th>
-                <td>{{ user.firstName }}</td>
-            </tr>
-            <tr>
-                <th>Last_name</th>
-                <td>{{ user.lastName }}</td>
-            </tr>
-            <tr>
-                <th>Biography</th>
-                <td>{{ user.biography }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>IsVerified</th>
-                <td>{{ user.isVerified ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Username</th>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">First Name</th>
+                                <td>{{ user.firstName }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Last Name</th>
+                                <td>{{ user.lastName }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Biography</th>
+                                <td>{{ user.biography }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Joined</th>
+                                <td>{{ user.createdAt ? user.createdAt|date('M d, Y') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Email</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                <div class="card-footer">
+                    <!-- Affichage des abonnés et abonnements -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Followers</h5>
+                            <ul>
+                                {% for follower in user.followers %}
+                                    <li>{{ follower.username }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Following</h5>
+                            <p>{{ user.following|length }} personne(s) suivie(s)</p>
+                        </div>
+                    </div>
+                </div>
 
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+                <div class="card-footer">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">Éditer</a>
+                    {{ include('user/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

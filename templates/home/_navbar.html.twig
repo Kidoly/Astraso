@@ -5,14 +5,16 @@
     <div class="container-fluid"> <!-- Ajout de la classe container-fluid -->
         <!-- Élément à gauche -->
         <div class="d-flex align-items-center">
-            <a class="navbar-brand" href="{{ path('app_login') }}">
-                {% if app.user.userIdentifier %}
+            <!-- Création d'un lien vers la page de profil de l'utilisateur connecté -->
+            <a class="navbar-brand" href="{{ path('app_user_show', {'id': app.user.id}) }}">
+                {% if app.user %}
                     <img src="data:images/default;base64,{{ app.user.image }}" alt="Profile Image">
                 {% else %}
                     <img src="{{ asset('images/default-profile-image.jpg') }}" alt="Profile Image">
                 {% endif %}
             </a>
         </div>
+        
 
         <!-- Élément central -->
         <div class="d-flex align-items-center justify-content-center">
