@@ -41,22 +41,13 @@
                 </div>
 
                 <div class="card-footer">
-                    <!-- Affichage des abonnés et abonnements -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Followers</h5>
-                            <ul>
-                                {% for follower in user.followers %}
-                                    <li>{{ follower.username }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Following</h5>
-                            <p>{{ user.following|length }} personne(s) suivie(s)</p>
-                        </div>
-                    </div>
-                </div>
+                    <!-- Affichage des button abonnement -->
+
+                    
+                            <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger">Unfollow</a>
+
+                            <a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary">Follow</a>
+                    
 
                 <div class="card-footer">
                     <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>

@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\FollowRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
+use App\Entity\Institution;
+use App\Entity\Hashtag;
 
 #[ORM\Entity(repositoryClass: FollowRepository::class)]
 class Follow
@@ -26,8 +29,13 @@ class Follow
     #[ORM\ManyToOne(inversedBy: 'follows')]
     private ?Hashtag $hashtag = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\Column(type: 'datetime_immutable')]
+    public ?\DateTimeImmutable $created_at;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -44,6 +52,29 @@ class Follow
         $this->following_user = $following_user;
 
         return $this;
+    }
+
+    public function addFollowingUser(User $following_user): static
+    {
+        if ($this->following_user !== $following_user) {
+            $this->following_user = $following_user;
+        }
+
+        return $this;
+    }
+
+    public function removeFollowingUser(User $following_user): static
+    {
+        if ($this->following_user === $following_user) {
+            $this->following_user = null;
+        }
+
+        return $this;
+    }
+
+    public function isFollowingUser(User $following_user): bool
+    {
+        return $this->following_user === $following_user;
     }
 
     public function getFollowedUser(): ?User
