@@ -6,6 +6,7 @@ use App\Entity\Follow;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\FollowRepository;
+use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,7 +47,7 @@ class UserController extends AbstractController
 
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-public function show(User $user, FollowRepository $followRepository): Response
+public function show(User $user, FollowRepository $followRepository, PostRepository $postRepository): Response
 {
     // Return the follow status of the current user
 
@@ -67,12 +68,20 @@ public function show(User $user, FollowRepository $followRepository): Response
         // Récupérer le nombre de personnes qui suivent l'utilisateur actuel
         $numberOfFollowers = count($followRepository->findBy(['followed_user' => $user]));
 
+        //Réccupérer les nombre de posts de l'utilisateur
+        $numberOfPosts = count($postRepository->findBy(['user' => $user]));
+
+        //Afficher les tous les posts de l'utilisateur
+        $posts = $postRepository->findBy(['user' => $user]);
+
         // Passer le résultat à la vue
         return $this->render('user/show.html.twig', [
             'user' => $user,
             'follow' => $follow,
             'numberOfFollowings' => $numberOfFollowings,
             'numberOfFollowers' => $numberOfFollowers,
+            'numberOfPosts' => $numberOfPosts,
+            'posts' => $posts,
         ]);
     }
     
@@ -90,7 +99,14 @@ public function show(User $user, FollowRepository $followRepository): Response
             throw $this->createAccessDeniedException('Access Denied');
         }
 
-        // Code for editing the user
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        }
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
@@ -102,6 +118,8 @@ public function show(User $user, FollowRepository $followRepository): Response
         }
 
         // Code for deleting the user
+
+        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/follow', name: 'app_user_follow', methods: ['GET'])]
@@ -129,7 +147,7 @@ public function follow(User $user, EntityManagerInterface $entityManager, Follow
     $entityManager->persist($follow);
     $entityManager->flush();
 
-    return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    return $this->redirectToRoute('app_user_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
 }
 
 
@@ -157,6 +175,6 @@ public function follow(User $user, EntityManagerInterface $entityManager, Follow
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
     }
 }
