@@ -24,40 +24,42 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        // Code for creating a new user
-    }
-
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user, FollowRepository $followRepository): Response
-    {
-        // Return the follow status of the current user
+public function show(User $user, FollowRepository $followRepository): Response
+{
+    // Return the follow status of the current user
 
-        // Récupérer l'utilisateur actuel
-        $currentUser = $this->getUser();
+    // Récupérer l'utilisateur actuel
+    $currentUser = $this->getUser();
 
-        // Vérifier si l'utilisateur actuel est authentifié
+    // Vérifier si l'utilisateur actuel est authentifié
+    if ($currentUser) {
+        // Récupérer l'entité Follow correspondant à l'utilisateur actuel et à l'utilisateur suivi
+        $follow = $followRepository->findOneBy([
+            'following_user' => $currentUser,
+            'followed_user' => $user,
+        ]);
 
-        if ($currentUser) {
-            // Récupérer l'entité Follow correspondant à l'utilisateur actuel et à l'utilisateur suivi
-            $follow = $followRepository->findOneBy([
-                'following_user' => $currentUser,
-                'followed_user' => $user,
-            ]);
+        // Récupérer le nombre de personnes suivies par l'utilisateur du compte afficher
+        $numberOfFollowings = count($followRepository->findBy(['following_user' => $user]));
 
-            // Passer le résultat à la vue
-            return $this->render('user/show.html.twig', [
-                'user' => $user,
-                'follow' => $follow,
-            ]);
-        }
-        
+        // Récupérer le nombre de personnes qui suivent l'utilisateur actuel
+        $numberOfFollowers = count($followRepository->findBy(['followed_user' => $user]));
+
+        // Passer le résultat à la vue
         return $this->render('user/show.html.twig', [
             'user' => $user,
+            'follow' => $follow,
+            'numberOfFollowings' => $numberOfFollowings,
+            'numberOfFollowers' => $numberOfFollowers,
         ]);
     }
+    
+    return $this->render('user/show.html.twig', [
+        'user' => $user,
+    ]);
+}
+
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
