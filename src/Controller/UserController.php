@@ -31,9 +31,28 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user): Response
+    public function show(User $user, FollowRepository $followRepository): Response
     {
-        // Check if the current user is the owner of the user entity
+        // Return the follow status of the current user
+
+        // Récupérer l'utilisateur actuel
+        $currentUser = $this->getUser();
+
+        // Vérifier si l'utilisateur actuel est authentifié
+
+        if ($currentUser) {
+            // Récupérer l'entité Follow correspondant à l'utilisateur actuel et à l'utilisateur suivi
+            $follow = $followRepository->findOneBy([
+                'following_user' => $currentUser,
+                'followed_user' => $user,
+            ]);
+
+            // Passer le résultat à la vue
+            return $this->render('user/show.html.twig', [
+                'user' => $user,
+                'follow' => $follow,
+            ]);
+        }
         
         return $this->render('user/show.html.twig', [
             'user' => $user,
