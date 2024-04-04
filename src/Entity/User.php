@@ -223,32 +223,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-
-    public function getFollows(): Collection
-    {
-        return $this->follows;
-    }
-
-    public function addFollow(Follow $follow): static
-    {
-        if (!$this->follows->contains($follow)) {
-            $this->follows->add($follow);
-            $follow->setFollowingUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollow(Follow $follow): static
-    {
-        if ($this->follows->removeElement($follow)) {
-            // set the owning side to null (unless already changed)
-            if ($follow->getFollowingUser() === $this) {
-                $follow->setFollowingUser(null);
-            }
-        }
-
-        return $this;
-    }
 }
