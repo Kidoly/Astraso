@@ -41,8 +41,6 @@
                 </div>
 
                 <div class="card-footer">
-                    <h3>Followers</h3>
-
                     <!-- Afficher le nombre de followers -->
                     <p>Nombre de followers : {{ numberOfFollowers}}</p>
                     <!-- Afficher le nombre de personnes suivies -->
@@ -52,13 +50,15 @@
                 <div class="card-footer">
                     <!-- Affichage des boutons d'abonnement -->
                     {% if app.user.id == user.id %}
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">Éditer</a>
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary"><i class="bi bi-gear-fill"></i>
+                        </a>
                         {{ include('user/_delete_form.html.twig') }}
                     {% else %}
                         {% if follow is empty %}
-                            <a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary">Follow</a>
+                            <a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary"><i class="bi bi-star"></i>
+                            </a>
                         {% else %}
-                            <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger">Unfollow</a>
+                            <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger"><i class="bi bi-star-fill"></i></a>
                         {% endif %}
                     {% endif %}
                     <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
