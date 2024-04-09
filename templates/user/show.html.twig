@@ -12,7 +12,10 @@
 					<div class="card-body">
 						{% if user.image %}
 							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+						{% else %}
+							<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
 						{% endif %}
+
 						<table class="table">
 							<tbody>
 								<tr>
