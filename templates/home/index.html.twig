@@ -9,6 +9,9 @@
 {% endblock %}
 
 <style>
+    .container {
+        margin-top: 20px;
+    }
 
     .grid-container {
         display: grid;
@@ -22,11 +25,23 @@
 
     .posts {
         grid-column: 2 / 3;
+        overflow-x: auto; /* Activer le défilement horizontal */
+        white-space: nowrap; /* Empêcher le retour à la ligne des éléments */
+        max-width: 100%; /* Définir la largeur maximale du conteneur */
+        height: 100vh; /* Définir la hauteur maximale du conteneur */
+        scrollbar-width: none; /* Masquer la barre de défilement */
+        
     }
 
     .trends {
         grid-column: 3 / 4;
     }
+
+    
+    .posts {
+        display: inline-block; /* Afficher les éléments en ligne */
+    }
+
 </style>
 
 <div class="example-wrapper">
@@ -64,32 +79,35 @@
                             </div>
                         </div>
                     </div>                    
-                    <div class="posts">
-                        <h1 class="mt-4 mb-4">Les derniers posts</h1>
-                        {% for post in posts %}
-                            <div class="card mb-3">
-                                <div class="card-header">
-                                    <h5>{{ post.user.username }}</h5>
+                        <div class="posts">
+                            {% for post in posts %}
+                                <div class="card mb-3 scrollbar">
+                                    <div class="card-header">
+                                        <h5>{{ post.user.username }}</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">{{ post.createdAt|date('d/m/Y H:i') }}</p>
+                                        <p class="card-text">{{ post.body }}</p>
+                    
+                                        <!-- Affiche le temps post.timing -->
+                                        {% if post.timing %}
+                                            <p class="card-text">Temps de retard: {{ post.timing|date('H:i') }} minutes</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        Publié le {{ post.createdAt|date('d/m/Y H:i') }}
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <p class="card-text">{{ post.createdAt|date('d/m/Y H:i') }}</p>
-                                    <p class="card-text">{{ post.body }}</p>
-
-                                    <!-- Affiche le temps post.timing -->
-                                    {% if post.timing %}
-                                        <p class="card-text">Temps de retard: {{ post.timing|date('H:i') }} minutes</p>
-                                    {% endif %}
-
-                                </div>
-                                <div class="card-footer text-muted">
-                                    Publié le {{ post.createdAt|date('d/m/Y H:i') }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                            {% endfor %}
+                        </div>
+                    
                     <div class="trends">
                         <!-- Ici, vous pouvez ajouter le code pour afficher les tendances -->
                         <!-- Par exemple, les sujets tendances ou les hashtags populaires -->
+                        <div>
+                            <span> terst dnkdfdsfs</span>
+                        </div>
+
                     </div>
                 </div>
             </div>
