@@ -19,13 +19,6 @@ class PostType extends AbstractType
             ->add('timing', null, [
                 'widget' => 'single_text',
             ])
-            ->add('created_at', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('user', EntityType::class, [
-                'class' => user::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
