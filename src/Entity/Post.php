@@ -30,7 +30,7 @@ class Post
     private ?\DateTimeInterface $timing = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    public ?\DateTimeImmutable $created_at = null;
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
     private Collection $comments;
@@ -54,7 +54,9 @@ class Post
         $this->reports = new ArrayCollection();
         $this->hashtagpcs = new ArrayCollection();
         $this->imagePosts = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
+    
 
     public function getId(): ?int
     {

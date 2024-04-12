@@ -18,13 +18,13 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $user = null;
+    private ?User $user = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $body = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    private ?post $post = null;
+    private ?Post $post = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;

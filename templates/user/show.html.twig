@@ -3,14 +3,19 @@
 {% block title %}User Profile{% endblock %}
 
 {% block body %}
-<div class="container">
+
+{% block navbar %}
+    {% include 'home/_navbar.html.twig' %}
+{% endblock %}
+
+<div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">User Profile</div>
+                <div class="card-header bg-primary text-white">User Profile</div>
 
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table table-bordered">
                         <tbody>
                             <tr>
                                 <th scope="row">Username</th>
@@ -40,28 +45,59 @@
                     </table>
                 </div>
 
-                <div class="card-footer">
-                    <!-- Affichage des abonnés et abonnements -->
+                <div class="card-footer bg-light">
                     <div class="row">
-                        <div class="col-md-6">
-                            <h5>Followers</h5>
-                            <ul>
-                                {% for follower in user.followers %}
-                                    <li>{{ follower.username }}</li>
-                                {% endfor %}
-                            </ul>
+                        <div class="col">
+                            <p class="text-muted">Nombre de followers : {{ numberOfFollowers }}</p>
                         </div>
-                        <div class="col-md-6">
-                            <h5>Following</h5>
-                            <p>{{ user.following|length }} personne(s) suivie(s)</p>
+                        <div class="col">
+                            <p class="text-muted">Nombre de personnes suivies : {{ numberOfFollowings }}</p>
+                        </div>
+                        <div class="col">
+                            <p class="text-muted">Nombre de posts : {{ numberOfPosts }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-footer">
-                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">Éditer</a>
-                    {{ include('user/_delete_form.html.twig') }}
+                <div class="card-footer text-white d-flex">
+                    <!-- Affichage des boutons d'action -->
+                    {% if app.user.id == user.id %}
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr    -2"><i class="bi bi-gear-fill"></i></a>
+                        <a href="{{ path('app_post_new') }}" class="btn btn-success"><i class="bi bi-plus"></i></a>
+                    {% else %}
+                        {% if follow is empty %}
+                            <a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary mr-2">Suivre</a>
+                        {% else %}
+                            <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger mr-2">Ne plus suivre</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="card-footer bg-light">
+                    <!-- Affichage des posts de l'utilisateur -->
+                    <h2>Posts</h2>
+                    <div class="card">
+                        <div class="card-header">Posts</div>
+                        <div class="card-body">
+                            <!-- Si l'utilisateur n'a pas de post -->
+                            {% if numberOfPosts is null %}
+                                <p>Il n'y a pas de post</p>
+                            {% else %}
+                                <!-- Afficher les posts -->
+                                {% for post in posts %}
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ post.title }}</h5>
+                                            <p class="card-text">{{ post.body }}</p>
+                                        </div>
+                                        <div class="card-footer text-muted">
+                                            Post ID: {{ post.id }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}                    
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
