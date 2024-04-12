@@ -19,6 +19,11 @@
                 <th>Body</th>
                 <td>{{ post.body }}</td>
             </tr>
+            {% if post.image %}
+							<img src="{{ asset('uploads/images/' ~ post.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+						{% else %}
+							<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+						{% endif %}
             <tr>
                 <th>Timing</th>
                 <td>{{ post.timing ? post.timing|date('H:i:s') : '' }}</td>

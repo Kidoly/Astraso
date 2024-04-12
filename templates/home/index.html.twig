@@ -57,14 +57,15 @@
                                 <h5>{{ app.user.username }}</h5>
                             </div>
                             <div class="card-body">
-                                {% if app.user.image %}
-                                    <img src="{{ asset('path/to/your/image.jpg') }}" alt="Image de profil" class="img-fluid">
+                                {% if user.image %}
+                                    <img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
+                                {% else %}
+                                    <img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
                                 {% endif %}
 
                                 {% if app.user.firstname %}
                                     <p class="card-text">{{ app.user.firstname }}</p>
                                 {% endif %}
-
                                 {% if app.user.biography %}
                                     <p class="card-text">{{ app.user.biography }}</p>
                                 {% endif %}
@@ -88,6 +89,13 @@
                                     <div class="card-body">
                                         <p class="card-text">{{ post.createdAt|date('d/m/Y H:i') }}</p>
                                         <p class="card-text">{{ post.body }}</p>
+
+                                        <!-- Affiche l'image post.image -->
+                                        {% if post.image %}
+                                            <img src="{{ asset('uploads/images/' ~ post.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                            <img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+                                        {% endif %} 
                     
                                         <!-- Affiche le temps post.timing -->
                                         {% if post.timing %}
