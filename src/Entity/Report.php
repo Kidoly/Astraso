@@ -15,17 +15,17 @@ class Report
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $user_reporter = null;
+    private ?User $user_reporter = null;
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
-    private ?user $user_reported = null;
+    private ?User $user_reported = null;
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
-    private ?post $post = null;
+    private ?Post $post = null;
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?reason $reason = null;
+    private ?Reason $reason = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
