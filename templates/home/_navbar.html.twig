@@ -1,39 +1,39 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid"> <!-- Ajout de la classe container-fluid -->
-        <!-- Élément à gauche -->
-        <div class="d-flex align-items-center">
-            <!-- Création d'un lien vers la page de profil de l'utilisateur connecté -->
-            <a class="navbar-brand" href="{{ path('app_user_show', {'id': app.user.id}) }}">
-                {% if app.user %}
-                    <img src="data:images/default;base64,{{ app.user.image }}" alt="Profile Image">
-                {% else %}
-                    <img src="{{ asset('images/default-profile-image.jpg') }}" alt="Profile Image">
-                {% endif %}
-            </a>
-        </div>
-        
-
-        <!-- Élément central -->
-        <div class="d-flex align-items-center justify-content-center">
-            <form class="form-inline d-flex" action="{{ path('app_login') }}" method="GET">
-                <input class="form-control m-1" type="text" name="query" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-primary m-1" type="submit">Go</button>
-            </form>
-        </div>
-        
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container-fluid">
+			<!-- Ajout de la classe container-fluid -->
+			<!-- Élément à gauche -->
+				<div
+				class="d-flex align-items-center"> <!-- Création d'un lien vers la page de profil de l'utilisateur connecté -->
+				<a class="navbar-brand" href="{{ path('app_user_show', {'id': app.user.id}) }}">
+					{% if user.image %}
+						<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
+					{% else %}
+						<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
+					{% endif %}
+				</a>
+			</div>
 
 
-        <!-- Élément à droite -->
-        <div class="d-flex align-items-center ml-auto">
-            {% if app.user.userIdentifier %}
-                <a class="btn btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
-            {% else %}
-                <a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
-            {% endif %}
-        </div>
-    </div>
-</nav>
+			<!-- Élément central -->
+			<div class="d-flex align-items-center justify-content-center">
+				<form class="form-inline d-flex" action="{{ path('app_login') }}" method="GET">
+					<input class="form-control m-1" type="text" name="query" placeholder="Search" aria-label="Search">
+					<button class="btn btn-outline-primary m-1" type="submit">Go</button>
+				</form>
+			</div>
+
+
+			<!-- Élément à droite -->
+			<div class="d-flex align-items-center ml-auto">
+				{% if app.user.userIdentifier %}
+					<a class="btn btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
+				{% else %}
+					<a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
+				{% endif %}
+			</div>
+		</div>
+	</nav>
 {% endblock %}

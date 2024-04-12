@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Profile{% endblock %}
+{% block title %}User Profile
+{% endblock %}
 
 {% block body %}
 
@@ -12,40 +13,46 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">User Profile</div>
+                <div class="card-header">User Profile</div>
 
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th scope="row">Username</th>
-                                <td>{{ user.username }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">First Name</th>
-                                <td>{{ user.firstName }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Last Name</th>
-                                <td>{{ user.lastName }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Biography</th>
-                                <td>{{ user.biography }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Joined</th>
-                                <td>{{ user.createdAt ? user.createdAt|date('M d, Y') : '' }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Email</th>
-                                <td>{{ user.email }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+						{% if user.image %}
+							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+						{% else %}
+							<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+						{% endif %}
 
-                <div class="card-footer bg-light">
+						<table class="table">
+							<tbody>
+								<tr>
+									<th scope="row">Username</th>
+									<td>{{ user.username }}</td>
+								</tr>
+								<tr>
+									<th scope="row">First Name</th>
+									<td>{{ user.firstName }}</td>
+								</tr>
+								<tr>
+									<th scope="row">Last Name</th>
+									<td>{{ user.lastName }}</td>
+								</tr>
+								<tr>
+									<th scope="row">Biography</th>
+									<td>{{ user.biography }}</td>
+								</tr>
+								<tr>
+									<th scope="row">Joined</th>
+									<td>{{ user.createdAt ? user.createdAt|date('M d, Y') : '' }}</td>
+								</tr>
+								<tr>
+									<th scope="row">Email</th>
+									<td>{{ user.email }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+                                <div class="card-footer bg-light">
                     <div class="row">
                         <div class="col">
                             <p class="text-muted">Nombre de followers : {{ numberOfFollowers }}</p>

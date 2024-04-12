@@ -1,13 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Edit User
+{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+	<h1>Edit User</h1>
 
-    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_user_index') }}">back to list</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+	{{ form_start(form) }}
+	{{ form_row(form.image) }}
+	{{ form_row(form.username) }}
+	{{ form_row(form.password) }}
+	{{ form_row(form.firstName) }}
+	{{ form_row(form.lastName) }}
+	{{ form_row(form.email) }}
+	{{ form_row(form.biography) }}
+	{{ form_row(form.institution) }}
+	<button type="submit" class="btn btn-primary">Update</button>
+	{{ form_end(form) }}
 {% endblock %}

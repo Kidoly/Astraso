@@ -16,7 +16,7 @@ class Image
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::BLOB)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private $image;
 
     #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'image', orphanRemoval: true)]
@@ -32,12 +32,12 @@ class Image
         return $this->id;
     }
 
-    public function getImage()
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage($image): static
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 

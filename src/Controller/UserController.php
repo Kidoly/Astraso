@@ -13,6 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Image;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -25,6 +29,14 @@ class UserController extends AbstractController
         ]);
     }
 
+<<<<<<< HEAD
+    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    public function show(User $user): Response
+    {
+        // Check if the current user is the owner of the user entity
+
+        return $this->render('user/show.html.twig', [
+=======
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -40,6 +52,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/new.html.twig', [
+>>>>>>> origin/dev
             'user' => $user,
             'form' => $form,
         ]);
@@ -92,13 +105,54 @@ public function show(User $user, FollowRepository $followRepository, PostReposit
 
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher, User $user): Response
     {
-        // Check if the current user is the owner of the user entity
-        if ($user !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Access Denied');
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Encode the plain password
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['image']->getData();
+
+            if ($uploadedFile) {
+                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
+
+                try {
+                    $uploadedFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // TODO: Handle exception
+                }
+
+                $image = new Image();
+                $image->setImage($newFilename);
+                $user->setImage($image);
+            }
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
         }
 
+<<<<<<< HEAD
+        return $this->render('user/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+=======
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
@@ -107,7 +161,9 @@ public function show(User $user, FollowRepository $followRepository, PostReposit
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
+>>>>>>> origin/dev
     }
+
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
@@ -117,7 +173,24 @@ public function show(User $user, FollowRepository $followRepository, PostReposit
             throw $this->createAccessDeniedException('Access Denied');
         }
 
+<<<<<<< HEAD
+        // Set password to null to prevent EntityUserProvider from refreshing the user object
+        $user->setPassword('');
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+    }
+
+    # Method for following a user
+    #[Route('/{id}/follow', name: 'app_user_follow', methods: ['GET'])]
+    public function follow(User $user, EntityManagerInterface $entityManager, Follow $follow): Response
+    {
+        $follow->setFollowingUser($this->getUser());
+=======
         // Code for deleting the user
+>>>>>>> origin/dev
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
