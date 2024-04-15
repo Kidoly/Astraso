@@ -14,7 +14,7 @@ class Hashtagpc
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'hashtagpcs')]
-    private ?comment $comment = null;
+    private ?Comment $comment = null;
 
     #[ORM\ManyToOne(inversedBy: 'hashtagpcs')]
     private ?Post $post = null;
@@ -28,36 +28,36 @@ class Hashtagpc
         return $this->id;
     }
 
-    public function getComment(): ?comment
+    public function getComment(): ?Comment
     {
         return $this->comment;
     }
 
-    public function setComment(?comment $comment): static
+    public function setComment(?Comment $comment): static
     {
         $this->comment = $comment;
 
         return $this;
     }
 
-    public function getPost(): ?post
+    public function getPost(): ?Post
     {
         return $this->post;
     }
 
-    public function setPost(?post $post): static
+    public function setPost(?Post $post): static
     {
         $this->post = $post;
 
         return $this;
     }
 
-    public function getHashtag(): ?hashtag
+    public function getHashtag(): ?Hashtag
     {
         return $this->hashtag;
     }
 
-    public function setHashtag(?hashtag $hashtag): static
+    public function setHashtag(?Hashtag $hashtag): static
     {
         $this->hashtag = $hashtag;
 

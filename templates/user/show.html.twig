@@ -91,14 +91,18 @@
                                 <p>Il n'y a pas de post</p>
                             {% else %}
                                 <!-- Afficher les posts -->
-                                {% for post in posts %}
+                                    {% for post in posts %}
                                     <div class="card mb-3">
                                         <div class="card-body">
+                                            {% for post in posts %}
+                                                {% if post.imagePosts is null %}
+                                                    <div>Post ID {{ post.id }} has null imagePosts property</div>
+                                                {% endif %}
+                                            {% endfor %}
                                             <h5 class="card-title">{{ post.title }}</h5>
-                                            <p class="card-text">{{ post.body }}</p>
-                                        </div>
-                                        <div class="card-footer text-muted">
-                                            Post ID: {{ post.id }}
+                                            {% if post.body is not empty %}
+                                                <p class="card-text">{{ post.body }}</p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
