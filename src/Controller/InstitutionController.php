@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Institution;
 use App\Form\InstitutionType;
-use App\Repository\InstitutionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\InstitutionRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/institution')]
 class InstitutionController extends AbstractController
@@ -71,7 +71,7 @@ class InstitutionController extends AbstractController
     #[Route('/{id}', name: 'app_institution_delete', methods: ['POST'])]
     public function delete(Request $request, Institution $institution, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$institution->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $institution->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($institution);
             $entityManager->flush();
         }
