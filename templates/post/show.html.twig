@@ -32,19 +32,36 @@
 							</button>
 						{% endif %}
 						{% if app.user %}
-							{% set userLike = post.likes|filter(like => like.user == app.user) %}
+							{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
+							{% set regularLikesCount = post.likes|filter(like => not like.superlike)|length %}
 							{% if userLike|length == 0 %}
 								<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
 									<i class="bi bi-heart"></i>
-									{{ post.likes|length }}
+									{{ regularLikesCount }}
 									Like
 								</a>
 							{% else %}
 								<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
 									<i class="bi bi-heart-fill"></i>
-									{{ post.likes|length }}
-
+									{{ regularLikesCount }}
 									Unlike
+								</a>
+							{% endif %}
+						{% endif %}
+						{% if app.user %}
+							{% set userSuperlike = post.likes|filter(like => like.user == app.user and like.superlike) %}
+							{% set superLikesCount = post.likes|filter(like => like.superlike)|length %}
+							{% if userSuperlike|length == 0 %}
+								<a href="{{ path('app_post_superlike', {'id': post.id}) }}" class="btn btn-info">
+									<i class="bi bi-star"></i>
+									{{ superLikesCount }}
+									Superlike
+								</a>
+							{% else %}
+								<a href="{{ path('app_post_superunlike', {'id': post.id}) }}" class="btn btn-secondary">
+									<i class="bi bi-star-fill"></i>
+									{{ superLikesCount }}
+									Superlike
 								</a>
 							{% endif %}
 						{% endif %}
@@ -64,4 +81,16 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            if(urlParams.get('error') === 'superlike_limit') {
+                alert('Tu ne peux pas superliker plus d\'une fois par semaine!');
+                // Remove the query parameters from the URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    });
+	</script>
 {% endblock %}

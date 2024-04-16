@@ -64,7 +64,8 @@ class PostController extends AbstractController
                             $newFilename
                         );
                     } catch (\Exception $e) {
-                        // Handle the exception appropriately
+                        $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                        continue;
                     }
 
                     $image = new Image();
@@ -76,7 +77,7 @@ class PostController extends AbstractController
 
                     $post->addImagePost($imagePost);
                     $entityManager->persist($image);
-                    $entityManager->persist($imagePost); // Persist the ImagePost entity
+                    $entityManager->persist($imagePost);
                 }
             }
 
@@ -104,11 +105,13 @@ class PostController extends AbstractController
 
         // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
         $like = $likeRepository->findOneBy([]);
+        $superlike = $likeRepository->findOneBy([]);
 
         // Récupérer le nombre de personnes suivies par l'utilisateur du compte afficher
-        $numberOfLikes = count($likeRepository->findBy(['like' => $post]));
+        $numberOfLikes = $likeRepository->countLikes($post);
 
-        $numberOfLikes = count($likeRepository->findBy(['like' => $like]));
+        $numberOfSuperlikes = count($likeRepository->findBy(['superlike' => $superlike]));
+        $numberOfSuperlikes = count($likeRepository->findBy(['post' => $post]));
 
         // Create the form
         $commentForm = $this->createForm(CommentType::class, $comment);
@@ -122,6 +125,7 @@ class PostController extends AbstractController
             'commentForm' => $commentForm->createView(),
             'like' => $like,
             'numberOfLikes' => $numberOfLikes,
+            'numberOfSuperlikes' => $numberOfSuperlikes,
         ]);
     }
 
@@ -133,7 +137,7 @@ class PostController extends AbstractController
 
         // Check if the current user is the creator of the post
         if ($user !== $post->getUser()) {
-            $this->addFlash('error', 'You are not authorized to edit this post.');
+            $this->addFlash('error', 'Tu n\'es pas autorisé à modifier cette publication.');
             $referer = $request->headers->get('referer');
             $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
             return $this->redirect($referer ?: $lastPage);
@@ -167,7 +171,7 @@ class PostController extends AbstractController
                             $newFilename
                         );
                     } catch (\Exception $e) {
-                        $this->addFlash('error', 'Failed to upload image.');
+                        $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                         continue;
                     }
 
@@ -179,13 +183,13 @@ class PostController extends AbstractController
                     $imagePost->setPost($post);
 
                     $entityManager->persist($image);
-                    $entityManager->persist($imagePost);  // Ensure new ImagePost is also persisted
+                    $entityManager->persist($imagePost);
                 }
             }
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Post updated successfully.');
+            $this->addFlash('success', 'Le post a été modifié avec succès.');
             return $this->redirect($returnUrl);
         }
 
@@ -212,7 +216,7 @@ class PostController extends AbstractController
 
         // Check if the current user is the creator of the post
         if ($this->getUser() !== $post->getUser()) {
-            $this->addFlash('error', 'You are not authorized to delete this post.');
+            $this->addFlash('error', 'Tu n\'es pas autorisé à supprimer cette publication.');
             return $this->redirect($referer);
         }
 
@@ -220,7 +224,7 @@ class PostController extends AbstractController
         $entityManager->remove($post);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Post deleted successfully.');
+        $this->addFlash('success', 'The post has been deleted successfully.');
         return $this->redirect($referer);
     }
 
@@ -231,12 +235,12 @@ class PostController extends AbstractController
         $currentUser = $this->getUser();
 
         if (!$currentUser) {
-            $this->addFlash('warning', 'You must be logged in to like a post.');
+            $this->addFlash('warning', 'Tu dois être connecté pour liker une publication!');
             return $this->redirectToRoute('app_login');
         }
 
         $like = new Like();
-        $like->setSuperlike(false); // Attention : le superlike est désactivé par défaut
+        $like->setSuperlike(false);
         $like->setUser($currentUser);
         $like->setPost($post);
         $like->setCreatedAt(new DateTimeImmutable());
@@ -248,7 +252,7 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/{id}/unlike', name: 'app_post_unlike', methods: ['GET'])]
-    public function unlike(Request $request, Post $post, EntityManagerInterface $entityManager, likeRepository $likeRepository): Response
+    public function unlike(Request $request, Post $post, EntityManagerInterface $entityManager, LikeRepository $likeRepository): Response
     {
         $referer = $request->headers->get('referer');
 
@@ -261,6 +265,56 @@ class PostController extends AbstractController
 
         if ($like) {
             $entityManager->remove($like);
+            $entityManager->flush();
+        }
+
+        return $this->redirect($referer);
+    }
+
+    #[Route('/post/{id}/superlike', name: 'app_post_superlike', methods: ['GET'])]
+    public function superlike(Request $request, Post $post, EntityManagerInterface $entityManager, LikeRepository $likeRepository): Response
+    {
+        $referer = $request->headers->get('referer');
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Checking if the user already has an active superlike this week
+        $lastSuperlike = $likeRepository->findLastSuperlikeByUser($user);
+        if ($lastSuperlike && $lastSuperlike->getCreatedAt() > new \DateTime('-1 week')) {
+            $this->addFlash('error', 'Tu ne peux pas superliker plus d\'une fois par semaine!');
+            return $this->redirect($referer . '?error=superlike_limit');
+        }
+
+        $superlike = new Like();
+        $superlike->setUser($user);
+        $superlike->setPost($post);
+        $superlike->setSuperlike(true);
+        $superlike->setCreatedAt(new DateTimeImmutable());
+
+
+        $entityManager->persist($superlike);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Tu as superliké cette publication!');
+        return $this->redirect($referer);
+    }
+
+    #[Route('/post/{id}/superunlike', name: 'app_post_superunlike', methods: ['GET'])]
+    public function superunlike(Request $request, Post $post, EntityManagerInterface $entityManager, likeRepository $likeRepository): Response
+    {
+        $referer = $request->headers->get('referer');
+
+        $currentUser = $this->getUser();
+
+        $superlike = $likeRepository->findOneBy([
+            'user' => $currentUser,
+            'post' => $post,
+        ]);
+
+        if ($superlike) {
+            $entityManager->remove($superlike);
             $entityManager->flush();
         }
 
