@@ -44,8 +44,8 @@ class Post
     #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post')]
     private Collection $hashtagpcs;
 
-    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post')]
-    private Collection $imagePosts;
+    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', cascade: ['persist'], orphanRemoval: true)]
+    private $imagePosts;
 
     public function __construct()
     {
@@ -56,7 +56,7 @@ class Post
         $this->imagePosts = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
-    
+
 
     public function getId(): ?int
     {
@@ -220,24 +220,24 @@ class Post
     }
 
     /**
-     * @return Collection<int, ImagePost>
+     * @return Collection|ImagePost[]
      */
     public function getImagePosts(): Collection
     {
-        return $this->imagePosts;
+        return $this->imagePosts ?? new ArrayCollection();
     }
 
-    public function addImagePost(ImagePost $imagePost): static
+    public function addImagePost(ImagePost $imagePost): self
     {
         if (!$this->imagePosts->contains($imagePost)) {
-            $this->imagePosts->add($imagePost);
+            $this->imagePosts[] = $imagePost;
             $imagePost->setPost($this);
         }
 
         return $this;
     }
 
-    public function removeImagePost(ImagePost $imagePost): static
+    public function removeImagePost(ImagePost $imagePost): self
     {
         if ($this->imagePosts->removeElement($imagePost)) {
             // set the owning side to null (unless already changed)

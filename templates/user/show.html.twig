@@ -82,31 +82,17 @@
 
                 <div class="card-footer bg-light">
                     <!-- Affichage des posts de l'utilisateur -->
-                    <h2>Posts</h2>
-                    <div class="card">
-                        <div class="card-header">Posts</div>
-                        <div class="card-body">
-                            <!-- Si l'utilisateur n'a pas de post -->
-                            {% if numberOfPosts is null %}
-                                <p>Il n'y a pas de post</p>
-                            {% else %}
-                                <!-- Afficher les posts -->
-                                {% for post in posts %}
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ post.title }}</h5>
-                                            <p class="card-text">{{ post.body }}</p>
-                                        </div>
-                                        <div class="card-footer text-muted">
-                                            Post ID: {{ post.id }}
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}                    
-                        </div>
+                    <div class="card-header">Posts</div>
+                    <div class="card-body">
+                        {% if numberOfPosts == 0 %}
+                            <p>Il n'y a pas de post</p>
+                        {% else %}
+                            {% for post in posts %}
+                                {% include 'post/show.html.twig' with {'post': post} %}
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>
