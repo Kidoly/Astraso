@@ -40,6 +40,10 @@ class PostController extends AbstractController
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
+        if ($request->isMethod('GET')) {
+            $request->getSession()->set('last_page', $request->headers->get('referer'));
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $uploadedFiles */
             $uploadedFiles = $form['images']->getData();
@@ -75,7 +79,8 @@ class PostController extends AbstractController
             $entityManager->persist($post);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+            $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
+            return $this->redirect($lastPage);
         }
 
         return $this->render('post/new.html.twig', [
@@ -102,6 +107,10 @@ class PostController extends AbstractController
 
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
+
+        if ($request->isMethod('GET')) {
+            $request->getSession()->set('last_page', $request->headers->get('referer'));
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $uploadedFiles */
@@ -136,7 +145,8 @@ class PostController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+            $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
+            return $this->redirect($lastPage);
         }
 
         return $this->render('post/edit.html.twig', [
@@ -148,7 +158,7 @@ class PostController extends AbstractController
 
 
 
-    #[Route('/{id}', name: 'app_post_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_post_delete', methods: ['POST'])]
     public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $post->getId(), $request->request->get('_token'))) {
@@ -156,6 +166,11 @@ class PostController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+        if ($request->isMethod('GET')) {
+            $request->getSession()->set('last_page', $request->headers->get('referer'));
+        }
+
+        $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
+        return $this->redirect($lastPage);
     }
 }
