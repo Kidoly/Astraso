@@ -6,6 +6,8 @@ use App\Entity\Post;
 use App\Entity\Image;
 use App\Form\PostType;
 use DateTimeImmutable;
+use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Entity\ImagePost;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+
 
 #[Route('/post')]
 class PostController extends AbstractController
@@ -87,11 +91,25 @@ class PostController extends AbstractController
     }
 
 
-    #[Route('/{id}', name: 'app_post_show', methods: ['GET'])]
-    public function show(Post $post): Response
+    #[Route('/{id}', name: 'app_post_show', methods: ['GET', 'POST'])]
+    public function show(Post $post, Request $request, EntityManagerInterface $entityManager): Response
     {
+        dump('Rendering post/show', $post->getId());
+        // Create a new Comment instance
+        $comment = new Comment();
+        $comment->setPost($post);
+        $comment->setUser($this->getUser());
+
+        // Create the form
+        $commentForm = $this->createForm(CommentType::class, $comment);
+        dump($commentForm->createView());
+        dump('Rendering post/show', $commentForm->createView());
+
+
+        // Pass the form view to the template
         return $this->render('post/show.html.twig', [
             'post' => $post,
+            'commentForm' => $commentForm->createView(),
         ]);
     }
 

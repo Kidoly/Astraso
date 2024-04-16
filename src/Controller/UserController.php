@@ -6,16 +6,16 @@ use App\Entity\Follow;
 use App\Entity\User;
 use App\Entity\Image;
 use App\Form\UserType;
-use App\Repository\FollowRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use App\Repository\FollowRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 
