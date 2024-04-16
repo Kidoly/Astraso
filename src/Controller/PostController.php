@@ -255,17 +255,20 @@ class PostController extends AbstractController
     public function unlike(Request $request, Post $post, EntityManagerInterface $entityManager, LikeRepository $likeRepository): Response
     {
         $referer = $request->headers->get('referer');
-
         $currentUser = $this->getUser();
 
         $like = $likeRepository->findOneBy([
             'user' => $currentUser,
             'post' => $post,
+            'superlike' => false
         ]);
 
         if ($like) {
             $entityManager->remove($like);
             $entityManager->flush();
+            $this->addFlash('success', 'Like removed successfully.');
+        } else {
+            $this->addFlash('error', 'No like to remove.');
         }
 
         return $this->redirect($referer);
@@ -311,6 +314,7 @@ class PostController extends AbstractController
         $superlike = $likeRepository->findOneBy([
             'user' => $currentUser,
             'post' => $post,
+            'superlike' => true
         ]);
 
         if ($superlike) {
