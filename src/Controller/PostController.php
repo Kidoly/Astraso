@@ -40,9 +40,7 @@ class PostController extends AbstractController
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        if ($request->isMethod('GET')) {
-            $request->getSession()->set('last_page', $request->headers->get('referer'));
-        }
+        $referer = $request->headers->get('referer');
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $uploadedFiles */
@@ -79,8 +77,7 @@ class PostController extends AbstractController
             $entityManager->persist($post);
             $entityManager->flush();
 
-            $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
-            return $this->redirect($lastPage);
+            return $this->redirect($referer);
         }
 
         return $this->render('post/new.html.twig', [
@@ -101,16 +98,21 @@ class PostController extends AbstractController
     #[Route('/{id}/edit', name: 'app_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
-        // Set the user property to the currently logged-in user
+        // Retrieve the currently logged-in user
         $user = $this->getUser();
-        $post->setUser($user);
+
+        // Check if the current user is the creator of the post
+        if ($user !== $post->getUser()) {
+            $this->addFlash('error', 'You are not authorized to edit this post.');
+            $referer = $request->headers->get('referer');
+            $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
+            return $this->redirect($referer ?: $lastPage);
+        }
 
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        if ($request->isMethod('GET')) {
-            $request->getSession()->set('last_page', $request->headers->get('referer'));
-        }
+        $referer = $request->headers->get('referer');
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $uploadedFiles */
@@ -145,8 +147,9 @@ class PostController extends AbstractController
 
             $entityManager->flush();
 
-            $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
-            return $this->redirect($lastPage);
+            $this->addFlash('success', 'Post updated successfully.');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
         }
 
         return $this->render('post/edit.html.twig', [
@@ -156,21 +159,30 @@ class PostController extends AbstractController
     }
 
 
-
-
     #[Route('/{id}/delete', name: 'app_post_delete', methods: ['POST'])]
     public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $post->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($post);
-            $entityManager->flush();
-        }
-
-        if ($request->isMethod('GET')) {
-            $request->getSession()->set('last_page', $request->headers->get('referer'));
-        }
-
+        // Retrieve the last page from the session or set default redirection if none is set
         $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
-        return $this->redirect($lastPage);
+        $referer = $request->headers->get('referer', $lastPage);
+
+        // Check CSRF token validity for security
+        if (!$this->isCsrfTokenValid('delete' . $post->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirect($referer);
+        }
+
+        // Check if the current user is the creator of the post
+        if ($this->getUser() !== $post->getUser()) {
+            $this->addFlash('error', 'You are not authorized to delete this post.');
+            return $this->redirect($referer);
+        }
+
+        // Proceed with deletion
+        $entityManager->remove($post);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Post deleted successfully.');
+        return $this->redirect($referer);
     }
 }
