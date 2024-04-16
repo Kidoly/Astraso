@@ -112,12 +112,19 @@ class PostController extends AbstractController
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        $referer = $request->headers->get('referer');
+        $returnUrl = $request->query->get('returnUrl', $this->generateUrl('app_home'));
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Clear existing images
+            foreach ($post->getImagePosts() as $imagePost) {
+                $entityManager->remove($imagePost);
+                // Optionally delete the image file from the server here
+            }
+            $entityManager->flush();  // Ensure removal is executed immediately
+
+            // Process new images
             /** @var UploadedFile[] $uploadedFiles */
             $uploadedFiles = $form['images']->getData();
-
             foreach ($uploadedFiles as $uploadedFile) {
                 if ($uploadedFile) {
                     $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -130,7 +137,8 @@ class PostController extends AbstractController
                             $newFilename
                         );
                     } catch (\Exception $e) {
-                        // Handle the exception appropriately
+                        $this->addFlash('error', 'Failed to upload image.');
+                        continue;
                     }
 
                     $image = new Image();
@@ -140,16 +148,15 @@ class PostController extends AbstractController
                     $imagePost->setImage($image);
                     $imagePost->setPost($post);
 
-                    $post->addImagePost($imagePost);
                     $entityManager->persist($image);
+                    $entityManager->persist($imagePost);  // Ensure new ImagePost is also persisted
                 }
             }
 
             $entityManager->flush();
 
             $this->addFlash('success', 'Post updated successfully.');
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
+            return $this->redirect($returnUrl);
         }
 
         return $this->render('post/edit.html.twig', [
@@ -157,6 +164,7 @@ class PostController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
 
     #[Route('/{id}/delete', name: 'app_post_delete', methods: ['POST'])]

@@ -19,7 +19,8 @@
                 </div>
                 <div class="card-footer bg-light text-muted">
                     {% if app.user and app.user.id == post.user.id %}
-                        <a href="{{ path('app_post_edit', {'id': post.id}) }}" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+                        {# Manually append the returnUrl query parameter to the URL #}
+                        <a href="{{ path('app_post_edit', {'id': post.id}) }}?returnUrl={{ app.request.uri|url_encode }}" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
                         {{ include('post/_delete_form.html.twig') }}
                     {% endif %}
                 </div>

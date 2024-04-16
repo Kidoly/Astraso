@@ -44,7 +44,7 @@ class Post
     #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post')]
     private Collection $hashtagpcs;
 
-    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', cascade: ['persist'], orphanRemoval: true)]
     private $imagePosts;
 
     public function __construct()
