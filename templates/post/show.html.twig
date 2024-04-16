@@ -31,6 +31,23 @@
 								Comment
 							</button>
 						{% endif %}
+						{% if app.user %}
+							{% set userLike = post.likes|filter(like => like.user == app.user) %}
+							{% if userLike|length == 0 %}
+								<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
+									<i class="bi bi-heart"></i>
+									{{ post.likes|length }}
+									Like
+								</a>
+							{% else %}
+								<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
+									<i class="bi bi-heart-fill"></i>
+									{{ post.likes|length }}
+
+									Unlike
+								</a>
+							{% endif %}
+						{% endif %}
 					</div>
 				</div>
 			</div>

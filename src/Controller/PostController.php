@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\like;
 use App\Entity\Post;
 use App\Entity\Image;
 use App\Form\PostType;
@@ -10,6 +11,7 @@ use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Entity\ImagePost;
 use App\Repository\PostRepository;
+use App\Repository\LikeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -92,13 +94,21 @@ class PostController extends AbstractController
 
 
     #[Route('/{id}', name: 'app_post_show', methods: ['GET', 'POST'])]
-    public function show(Post $post, Request $request, EntityManagerInterface $entityManager): Response
+    public function show(Post $post, LikeRepository $likeRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         dump('Rendering post/show', $post->getId());
         // Create a new Comment instance
         $comment = new Comment();
         $comment->setPost($post);
         $comment->setUser($this->getUser());
+
+        // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
+        $like = $likeRepository->findOneBy([]);
+
+        // Récupérer le nombre de personnes suivies par l'utilisateur du compte afficher
+        $numberOfLikes = count($likeRepository->findBy(['like' => $post]));
+
+        $numberOfLikes = count($likeRepository->findBy(['like' => $like]));
 
         // Create the form
         $commentForm = $this->createForm(CommentType::class, $comment);
@@ -110,6 +120,8 @@ class PostController extends AbstractController
         return $this->render('post/show.html.twig', [
             'post' => $post,
             'commentForm' => $commentForm->createView(),
+            'like' => $like,
+            'numberOfLikes' => $numberOfLikes,
         ]);
     }
 
@@ -209,6 +221,49 @@ class PostController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Post deleted successfully.');
+        return $this->redirect($referer);
+    }
+
+    #[Route('/post/{id}/like', name: 'app_post_like', methods: ['GET'])]
+    public function like(Request $request, Post $post, EntityManagerInterface $entityManager, LikeRepository $likeRepository): Response
+    {
+        $referer = $request->headers->get('referer');
+        $currentUser = $this->getUser();
+
+        if (!$currentUser) {
+            $this->addFlash('warning', 'You must be logged in to like a post.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $like = new Like();
+        $like->setSuperlike(false); // Attention : le superlike est désactivé par défaut
+        $like->setUser($currentUser);
+        $like->setPost($post);
+        $like->setCreatedAt(new DateTimeImmutable());
+
+        $entityManager->persist($like);
+        $entityManager->flush();
+
+        return $this->redirect($referer);
+    }
+
+    #[Route('/post/{id}/unlike', name: 'app_post_unlike', methods: ['GET'])]
+    public function unlike(Request $request, Post $post, EntityManagerInterface $entityManager, likeRepository $likeRepository): Response
+    {
+        $referer = $request->headers->get('referer');
+
+        $currentUser = $this->getUser();
+
+        $like = $likeRepository->findOneBy([
+            'user' => $currentUser,
+            'post' => $post,
+        ]);
+
+        if ($like) {
+            $entityManager->remove($like);
+            $entityManager->flush();
+        }
+
         return $this->redirect($referer);
     }
 }
