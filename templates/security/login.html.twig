@@ -4,16 +4,21 @@
 
 {% block stylesheets %}
     {# Inclure le lien vers le fichier CSS de Bootstrap #}
-    <link rel="stylesheet" href="chemin/vers/bootstrap.css">
     <style>
+        body {
+            grid-template-columns: repeat(1, 2fr)!important;
+        }
         /* Ajoutez vos styles personnalisés ici */
         .container-fluid {
-            height: 100vh; /* Utilisez 100% de la hauteur de la fenêtre */
+            height: 100vh; 
         }
     </style>
 {% endblock %}
-
 {% block body %}
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
 <div class="container-fluid d-flex justify-content-center align-items-center">
     <form class="form-signin col-md-6 p-4" method="post">
         {% if error %}
@@ -62,4 +67,5 @@
         }
     });
 </script>
+{% endblock %}
 {% endblock %}
