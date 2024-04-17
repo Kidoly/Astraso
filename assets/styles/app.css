@@ -7,7 +7,7 @@
     --body-color: #000;
     --primary-color: #7856ff;
     --secondary-color: #9c9c9c99;
-    --success-color: #28a745;
+    --success-color: #5e44c6;
     --info-color: #17a2b8;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
@@ -30,6 +30,9 @@
 body {
     background-color: var(--body-bg);
     color: var(--body-color);
+    display: grid;
+    height: 100vh;
+    grid-template-columns: repeat(3, 2fr);
 }
 
 .btn-primary,
@@ -59,6 +62,16 @@ body {
 .btn-warning:focus,
 .btn-danger:focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+.btn-primary:active
+.btn-secondary:active,
+.btn-success:active,
+.btn-info:active,
+.btn-warning:active,
+.btn-danger:active {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
 }
 
 .btn-primary:disabled,
@@ -102,7 +115,6 @@ textarea:focus {
 
 
 .navbar-custom {
-  position: fixed;
   height: 100vh;
   flex-direction: column;
   justify-content: space-between;
