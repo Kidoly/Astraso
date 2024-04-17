@@ -22,11 +22,20 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_home') }}">Notifications</a>
+                <a class="nav-link" href="{{ path('app_institution_index') }}">Institution</a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_home') }}">Profile</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_home')}}">Notifications</a>
+                </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_user_show', {'id': app.user.id}) }}">Profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_user_edit', {'id': app.user.id}) }}">Settings</a>
             </li>
 
 
@@ -40,7 +49,7 @@
         <div class="d-flex align-items-center mb-3 profil-card" id="profilCard">
             
             <div class="profile-info d-flex">
-                {% if user.image %}
+                {% if app.user.image %}
                     <img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
                 {% else %}
                     <img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
