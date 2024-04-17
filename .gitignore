@@ -24,6 +24,6 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
-public/uploads/images/*
+public/uploads/images/*     
 
 deploy.sh
