@@ -1,8 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}New Post{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/post.css') }}">
+{% endblock %}
 
 {% block body %}
+
     <h1>Create new Post</h1>
 
     {{ include('post/_form.html.twig') }}
