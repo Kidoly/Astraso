@@ -26,10 +26,6 @@
 								Modifier
 							</a>
 							{{ include('post/_delete_form.html.twig') }}
-							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#commentModal">
-								<i class="fa-solid fa-comment"></i>
-								Comment
-							</button>
 						{% endif %}
 						{% if app.user %}
 							{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
@@ -67,54 +63,62 @@
 						{% endif %}
 						<!-- Report post -->
 						<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reportModalPost-{{ post.id }}">Report</button>
+						
+						<!-- Comment post -->
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCommentLabel-{{ post.id }}">Comment</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+	<!-- Report Post Modal -->
+	<div class="modal fade" id="reportModalPost-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalPostLabel-{{ post.id }}" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="commentModalLabel">Add a Comment</h5>
-					<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+					<h5 class="modal-title" id="reportModalPostLabel-{{ post.id }}">Report Post</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
 				</div>
-				<div class="modal-body"></div>
+				<div class="modal-body">
+					{{ render(controller('App\\Controller\\PostController::reportPost', {'id': post.id})) }}
+				</div>
 			</div>
 		</div>
 	</div>
-		<!-- Report Post Modal -->
-            <div class="modal fade" id="reportModalPost-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalPostLabel-{{ post.id }}" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="reportModalPostLabel-{{ post.id }}">Report Post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            {{ render(controller('App\\Controller\\PostController::reportPost', {'id': post.id})) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-		<!-- Success Modal HTML -->
-		<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="successModalLabel">Report</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						Le report a été envoyé avec succès!
-					</div>
+	<!-- Comment Modal -->
+	<div class="modal fade" id="modalCommentLabel-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="modalCommentLabel-{{ post.id }}" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalCommentLabel-{{ post.id }}">Comment Post</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					{{ render(controller('App\\Controller\\PostController::comment', {'id': post.id})) }}
 				</div>
 			</div>
 		</div>
+	</div>
+	<!-- Success Modal HTML -->
+	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="successModalLabel">Report</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Le report a été envoyé avec succès!
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
@@ -133,9 +137,11 @@
 				$(targetId).modal('show');
 			});
 
-			$('.close').on('click', function () {
+			$('.close').click(function() {
 				var modalId = $(this).closest('.modal').attr('id');
-				$('#' + modalId).modal('hide');
+				var modalElement = $('#' + modalId);
+				var modalInstance = bootstrap.Modal.getInstance(modalElement);
+				modalInstance.hide();
 			});
 		});
 	</script>
@@ -172,6 +178,9 @@
 		$('.close').on('click', function() {
 			var modalId = $(this).closest('.modal').attr('id');
 			$('#' + modalId).modal('hide');
+		});
+		$('.modal').on('hidden.bs.modal', function () {
+			$('.modal-backdrop').remove();
 		});
 	});
 
