@@ -15,6 +15,7 @@ use App\Form\CommentType;
 use App\Entity\ImagePost;
 use App\Repository\PostRepository;
 use App\Repository\LikeRepository;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -98,15 +99,16 @@ class PostController extends AbstractController
 
 
     #[Route('/{id}', name: 'app_post_show', methods: ['GET', 'POST'])]
-    public function show(Post $post, LikeRepository $likeRepository, Request $request, EntityManagerInterface $entityManager): Response
+    public function show(CommentRepository $commentRepository, Post $post, LikeRepository $likeRepository, Request $request, EntityManagerInterface $entityManager): Response
     {;
 
         // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
         $like = $likeRepository->findOneBy([]);
         $superlike = $likeRepository->findOneBy([]);
+        $comment = $commentRepository->findOneBy([]);
 
-        // Récupérer le nombre de personnes suivies par l'utilisateur du compte afficher
         $numberOfLikes = $likeRepository->countLikes($post);
+        $numberOfComments = $commentRepository->countComments($post);
 
         $numberOfSuperlikes = count($likeRepository->findBy(['superlike' => $superlike]));
         $numberOfSuperlikes = count($likeRepository->findBy(['post' => $post]));
@@ -118,6 +120,7 @@ class PostController extends AbstractController
             'like' => $like,
             'numberOfLikes' => $numberOfLikes,
             'numberOfSuperlikes' => $numberOfSuperlikes,
+            'numberOfComments' => $numberOfComments,
         ]);
     }
 

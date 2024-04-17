@@ -27,8 +27,6 @@
 		.posts {
 			grid-column: 2 / 3;
 			overflow-x: auto; /* Activer le défilement horizontal */
-			white-space: nowrap; /* Empêcher le retour à la ligne des éléments */
-			max-width: 100%; /* Définir la largeur maximale du conteneur */
 			height: 100vh; /* Définir la hauteur maximale du conteneur */
 			scrollbar-width: none; /* Masquer la barre de défilement */
 
@@ -90,8 +88,8 @@
 						</div>
 						<div class="posts">
 							{% for post in posts %}
-                                {% include 'post/show.html.twig' with {'post': post} %}
-                            {% endfor %}
+								{% include 'post/show.html.twig' with {'post': post} %}
+							{% endfor %}
 						</div>
 
 						<div class="trends">

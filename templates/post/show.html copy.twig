@@ -2,86 +2,73 @@
 {% block body %}
 
 	<div class="container mt-4">
-		<div class="tweet-wrap">
-			<div class="tweet-header">
-				<!-- If user has a image, display it -->
-				{% if post.user.image %}
-					<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
-						<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
-					</a>
-				{% else %}
-					<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
-						<img src="{{ asset('uploads/images/default.png') }}" alt="Profile picture" class="avator">
-					</a>
-				{% endif %}
-
-				<div class="tweet-header-info">
-				<!-- Make the name and username clickable -->
-				<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
-					{% if post.user.lastname != null and post.user.firstname != null %}
-						{{ post.user.firstname }} {{ post.user.lastname }}
-					{% else %}
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card">
+					<div class="card-header">
 						{{ post.user.username }}
-					{% endif %}
-					<span>@{{ post.user.username }}</span>
-				</a>
-				<span>{{ post.createdAt|date('d M, Y') }}</span>
+					</div>
+					<div class="card-body">
+						{% for imagePost in post.imagePosts %}
+							<img src="/uploads/images/{{ imagePost.image.image }}" class="card-img-top" alt="Post image" width="100">
+						{% endfor %}
 
-				<div class="css-dropdown">
-					<button class="dropdown-button">•••</button>
-					<div class="dropdown-content">
+						<h3 class="card-title">{{ post.title }}</h3>
+						<p class="card-text">{{ post.body }}</p>
+						<p class="text-muted">Posted on:
+							{{ post.createdAt|date('M d, Y') }}</p>
+					</div>
+					<div class="card-footer bg-light text-muted">
 						{% if app.user and app.user.id == post.user.id %}
-							<a href="{{ path('app_post_edit', {'id': post.id}) }}?returnUrl={{ app.request.uri|url_encode }}">
-								<i class="fa-solid fa-pen"></i>
+							{# Manually append the returnUrl query parameter to the URL #}
+							<a href="{{ path('app_post_edit', {'id': post.id}) }}?returnUrl={{ app.request.uri|url_encode }}" class="btn btn-primary">
+								<i class="bi bi-pencil"></i>
 								Modifier
 							</a>
 							{{ include('post/_delete_form.html.twig') }}
 						{% endif %}
+						{% if app.user %}
+							{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
+							{% set regularLikesCount = post.likes|filter(like => not like.superlike)|length %}
+							{% if userLike|length == 0 %}
+								<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
+									<i class="bi bi-heart"></i>
+									{{ regularLikesCount }}
+									Like
+								</a>
+							{% else %}
+								<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
+									<i class="bi bi-heart-fill"></i>
+									{{ regularLikesCount }}
+									Unlike
+								</a>
+							{% endif %}
+						{% endif %}
+						{% if app.user %}
+							{% set userSuperlike = post.likes|filter(like => like.user == app.user and like.superlike) %}
+							{% set superLikesCount = post.likes|filter(like => like.superlike)|length %}
+							
+							{% if userSuperlike|length == 0 %}
+								<a href="{{ path('app_post_superlike', {'id': post.id}) }}" class="btn btn-info">
+									<i class="bi bi-star"></i>
+									{{ superLikesCount }}
+									Superlike
+								</a>
+							{% else %}
+								<a href="{{ path('app_post_superunlike', {'id': post.id}) }}" class="btn btn-secondary">
+									<i class="bi bi-star-fill"></i>
+									{{ superLikesCount }}
+									Superlike
+								</a>
+							{% endif %}
+						{% endif %}
 						<!-- Report post -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#reportModalPost-{{ post.id }}"><i class="fa-solid fa-flag"></i> Report</button>
+						<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reportModalPost-{{ post.id }}">Report</button>
+						
+						<!-- Comment post -->
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCommentLabel-{{ post.id }}">Comment</button>
 					</div>
 				</div>
-				<p>{{ post.body }}</p>
-
-				</div>
-			</div>
-			<div class="tweet-img-wrap">
-				{% for imagePost in post.imagePosts %}
-					<img src="/uploads/images/{{ imagePost.image.image }}" class="tweet-img" alt="Post image" style="max-width:100%;">
-				{% endfor %}
-			</div>
-			<div class="tweet-info-counts">
-				{% if app.user %}
-					{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
-					{% set regularLikesCount = post.likes|filter(like => not like.superlike)|length %}
-					{% if userLike|length == 0 %}
-						<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
-							<i class="bi bi-heart"></i>
-							{{ regularLikesCount }}
-						</a>
-					{% else %}
-						<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
-							<i class="bi bi-heart-fill"></i>
-							{{ regularLikesCount }}
-						</a>
-					{% endif %}
-					{% set userSuperlike = post.likes|filter(like => like.user == app.user and like.superlike) %}
-					{% set superLikesCount = post.likes|filter(like => like.superlike)|length %}
-					{% if userSuperlike|length == 0 %}
-						<a href="{{ path('app_post_superlike', {'id': post.id}) }}" class="btn btn-info">
-							<i class="bi bi-star"></i>
-							{{ superLikesCount }}
-						</a>
-					{% else %}
-						<a href="{{ path('app_post_superunlike', {'id': post.id}) }}" class="btn btn-secondary">
-							<i class="bi bi-star-fill"></i>
-							{{ superLikesCount }}
-						</a>
-					{% endif %}
-				{% endif %}
-				<!-- Comment post -->
-				{% set commentsCount = post.comments|length %}
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCommentLabel-{{ post.id }}"><i class="fa-regular fa-comment"></i> {{ commentsCount }}</button>
 			</div>
 		</div>
 	</div>
@@ -106,34 +93,12 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="modalCommentLabel-{{ post.id }}">Répondre à @{{ post.user.username }}</h5>
+					<h5 class="modal-title" id="modalCommentLabel-{{ post.id }}">Comment Post</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="tweet-wrap" style="margin: 0; padding-bottom: 0;">
-					<div class="tweet-header" >
-						<!-- If user has a image, display it -->
-						{% if post.user.image %}
-							<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
-						{% else %}
-							<img src="asset('uploads/images/default.png" alt="" class="avator">
-						{% endif %}
-
-						<div class="tweet-header-info">
-						{% if post.user.lastname != null and post.user.firstname != null %}
-							{{ post.user.firstname }} {{ post.user.lastname }}
-						{% else %}
-							{{ post.user.username }}
-						{% endif %}
-						<span>@{{ post.user.username }}</span>
-						<span>
-							{{ post.createdAt|date('d M, Y') }}
-						</span>
-						<p>{{ post.body }}</p>
-						</div>
-					</div>
-				</div>
+				z
 				<hr>
 				<div class="modal-body">
 					{{ render(controller('App\\Controller\\PostController::comment', {'id': post.id})) }}
