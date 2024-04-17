@@ -99,12 +99,7 @@ class PostController extends AbstractController
 
     #[Route('/{id}', name: 'app_post_show', methods: ['GET', 'POST'])]
     public function show(Post $post, LikeRepository $likeRepository, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        dump('Rendering post/show', $post->getId());
-        // Create a new Comment instance
-        $comment = new Comment();
-        $comment->setPost($post);
-        $comment->setUser($this->getUser());
+    {;
 
         // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
         $like = $likeRepository->findOneBy([]);
@@ -116,16 +111,10 @@ class PostController extends AbstractController
         $numberOfSuperlikes = count($likeRepository->findBy(['superlike' => $superlike]));
         $numberOfSuperlikes = count($likeRepository->findBy(['post' => $post]));
 
-        // Create the form
-        $commentForm = $this->createForm(CommentType::class, $comment);
-        dump($commentForm->createView());
-        dump('Rendering post/show', $commentForm->createView());
-
 
         // Pass the form view to the template
         return $this->render('post/show.html.twig', [
             'post' => $post,
-            'commentForm' => $commentForm->createView(),
             'like' => $like,
             'numberOfLikes' => $numberOfLikes,
             'numberOfSuperlikes' => $numberOfSuperlikes,
@@ -356,7 +345,7 @@ class PostController extends AbstractController
             $referrer = $request->headers->get('referer');
             if (!$referrer) {
                 // Fallback if no referrer is available
-                $referrer = $this->generateUrl('homepage'); // Replace 'homepage' with the actual route name of your homepage or a suitable fallback
+                $referrer = $this->generateUrl('homepage');
             }
 
             // Append 'success=1' to the referrer URL
@@ -367,6 +356,48 @@ class PostController extends AbstractController
         return $this->render('report/_form_post.html.twig', [
             'form' => $form->createView(),
             'post' => $postReported
+        ]);
+    }
+
+    #[Route('/post/{id}/comment', name: 'app_post_comment', methods: ['POST'])]
+    public function comment(Request $request, Post $post, EntityManagerInterface $entityManager, int $id): Response
+    {
+
+        // Fetch the correct Post entity based on the provided ID
+        $postCommented = $entityManager->getRepository(Post::class)->find($id);
+
+        if (!$postCommented) {
+            throw $this->createNotFoundException('No post found for id ' . $id);
+        }
+
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Set the commenter to the current user
+            $comment->setUser($this->getUser());
+            // Correctly set the commented post
+            $comment->setPost($postCommented);
+            $comment->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            // Get referrer URL
+            $referrer = $request->headers->get('referer');
+            if (!$referrer) {
+                // Fallback if no referrer is available
+                $referrer = $this->generateUrl('homepage');
+            }
+
+            // Redirect to the referrer URL
+            return $this->redirect($referrer);
+        }
+
+        return $this->render('comment/_form.html.twig', [
+            'form' => $form->createView(),
+            'post' => $postCommented
         ]);
     }
 }
