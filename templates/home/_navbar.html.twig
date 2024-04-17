@@ -8,7 +8,7 @@
 				<div
 				class="d-flex align-items-center"> <!-- Création d'un lien vers la page de profil de l'utilisateur connecté -->
 				<a class="navbar-brand" href="{{ path('app_user_show', {'id': app.user.id}) }}">
-					{% if user.image %}
+					{% if app.user.image %}
 						<img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
 					{% else %}
 						<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">

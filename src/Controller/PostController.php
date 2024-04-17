@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\like;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Entity\Image;
+use App\Entity\Report;
 use App\Form\PostType;
 use DateTimeImmutable;
 use App\Entity\Comment;
+use App\Form\ReportType;
 use App\Form\CommentType;
 use App\Entity\ImagePost;
 use App\Repository\PostRepository;
@@ -323,5 +326,47 @@ class PostController extends AbstractController
         }
 
         return $this->redirect($referer);
+    }
+
+    #[Route('/post/{id}/reportpost', name: 'app_user_report_post', methods: ['GET', 'POST'])]
+    public function reportPost(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    {
+        // Fetch the correct Post entity based on the provided ID
+        $postReported = $entityManager->getRepository(Post::class)->find($id);
+
+        if (!$postReported) {
+            throw $this->createNotFoundException('No post found for id ' . $id);
+        }
+
+        $report = new Report();
+        $form = $this->createForm(ReportType::class, $report);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Set the reporter to the current user
+            $report->setUserReporter($this->getUser());
+            // Correctly set the reported post
+            $report->setPost($postReported);
+            $report->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($report);
+            $entityManager->flush();
+
+            // Get referrer URL
+            $referrer = $request->headers->get('referer');
+            if (!$referrer) {
+                // Fallback if no referrer is available
+                $referrer = $this->generateUrl('homepage'); // Replace 'homepage' with the actual route name of your homepage or a suitable fallback
+            }
+
+            // Append 'success=1' to the referrer URL
+            $redirectUrl = $referrer . (parse_url($referrer, PHP_URL_QUERY) ? '&' : '?') . 'success=1';
+            return $this->redirect($redirectUrl);
+        }
+
+        return $this->render('report/_form_post.html.twig', [
+            'form' => $form->createView(),
+            'post' => $postReported
+        ]);
     }
 }

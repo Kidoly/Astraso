@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Follow;
 use App\Entity\User;
 use App\Entity\Image;
+use App\Entity\Follow;
+use App\Entity\Report;
 use App\Form\UserType;
+use DateTimeImmutable;
+use App\Form\ReportType;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Repository\FollowRepository;
@@ -13,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -191,5 +195,44 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
+    }
+
+    #[Route('/{id}/reportuser', name: 'app_user_report_user', methods: ['GET', 'POST'])]
+    public function reportuser(Request $request, EntityManagerInterface $entityManager, int $id, User $user): Response
+    {
+        $report = new Report();
+        $form = $this->createForm(ReportType::class, $report);
+        $userReported = $entityManager->getRepository(User::class)->find($id);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Set the reporter to the current user
+            $report->setUserReporter($this->getUser());
+            // Set the reported user based on the id passed
+            $report->setUserReported($userReported);
+
+            $report->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($report);
+            $entityManager->flush();
+
+            $user = $this->getUser();
+
+            // Get referrer URL
+            $referrer = $request->headers->get('referer');
+            if (!$referrer) {
+                // Fallback if no referrer is available
+                $referrer = $this->generateUrl('homepage'); // Replace 'homepage' with the actual route name of your homepage or a suitable fallback
+            }
+
+            // Append 'success=1' to the referrer URL
+            $redirectUrl = $referrer . (parse_url($referrer, PHP_URL_QUERY) ? '&' : '?') . 'success=1';
+            return $this->redirect($redirectUrl);
+        }
+
+        return $this->render('report/_form.html.twig', [
+            'form' => $form->createView(),
+            'user' => $userReported
+        ]);
     }
 }
