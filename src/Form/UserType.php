@@ -22,11 +22,6 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('image', FileType::class, [
-                'label' => 'Photo',
-                'mapped' => false, // Le champ n'est pas mappé à une propriété de l'entité
-                'required' => false, // Le champ n'est pas obligatoire
-            ])
             ->add('username')
             ->add('password', PasswordType::class, [
                 // instead of being set onto the object directly,
@@ -51,8 +46,13 @@ class UserType extends AbstractType
             ->add('email')
             ->add('institution', EntityType::class, [
                 'class' => Institution::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
                 'required' => false,
+            ])
+            ->add('image', FileType::class, [
+                'label' => 'Photo',
+                'mapped' => false, // Le champ n'est pas mappé à une propriété de l'entité
+                'required' => false, // Le champ n'est pas obligatoire
             ]);
     }
 
