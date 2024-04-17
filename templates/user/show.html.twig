@@ -5,17 +5,17 @@
 
 {% block body %}
 
-{% block navbar %}
-    {% include 'home/_navbar.html.twig' %}
-{% endblock %}
+	{% block navbar %}
+		{% include 'home/_navbar.html.twig' %}
+	{% endblock %}
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">User Profile</div>
+	<div class="container mt-4">
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card">
+					<div class="card-header">User Profile</div>
 
-                <div class="card-body">
+					<div class="card-body">
 						{% if user.image %}
 							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
 						{% else %}
@@ -52,48 +52,158 @@
 						</table>
 					</div>
 
-                                <div class="card-footer bg-light">
-                    <div class="row">
-                        <div class="col">
-                            <p class="text-muted">Nombre de followers : {{ numberOfFollowers }}</p>
-                        </div>
-                        <div class="col">
-                            <p class="text-muted">Nombre de personnes suivies : {{ numberOfFollowings }}</p>
-                        </div>
-                        <div class="col">
-                            <p class="text-muted">Nombre de posts : {{ numberOfPosts }}</p>
-                        </div>
-                    </div>
-                </div>
+					<div class="card-footer bg-light">
+						<div class="row">
+							<div class="col">
+								<p class="text-muted">Nombre de followers :
+									{{ numberOfFollowers }}</p>
+							</div>
+							<div class="col">
+								<p class="text-muted">Nombre de personnes suivies :
+									{{ numberOfFollowings }}</p>
+							</div>
+							<div class="col">
+								<p class="text-muted">Nombre de posts :
+									{{ numberOfPosts }}</p>
+							</div>
+						</div>
+					</div>
 
-                <div class="card-footer text-white d-flex">
-                    <!-- Affichage des boutons d'action -->
-                    {% if app.user.id == user.id %}
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr    -2"><i class="bi bi-gear-fill"></i></a>
-                        <a href="{{ path('app_post_new') }}" class="btn btn-success"><i class="bi bi-plus"></i></a>
-                    {% else %}
-                        {% if follow is empty %}
-                            <a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary mr-2">Suivre</a>
-                        {% else %}
-                            <a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger mr-2">Ne plus suivre</a>
-                        {% endif %}
-                    {% endif %}
-                </div>
+					<div
+						class="card-footer text-white d-flex">
+						<!-- Affichage des boutons d'action -->
+						{% if app.user.id == user.id %}
+							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr    -2">
+								<i class="bi bi-gear-fill"></i>
+							</a>
+							<a href="{{ path('app_post_new') }}" class="btn btn-success">
+								<i class="bi bi-plus"></i>
+							</a>
+						{% else %}
+							{% if follow is empty %}
+								<a href="{{ path('app_user_follow', {'id': user.id}) }}" class="btn btn-primary mr-2">Suivre</a>
+							{% else %}
+								<a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger mr-2">Ne plus suivre</a>
+							{% endif %}
+						{% endif %}
+						<!-- Report l'utilisateur -->
+						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+					</div>
 
-                <div class="card-footer bg-light">
-                    <!-- Affichage des posts de l'utilisateur -->
-                    <div class="card-header">Posts</div>
-                    <div class="card-body">
-                        {% if numberOfPosts == 0 %}
-                            <p>Il n'y a pas de post</p>
-                        {% else %}
-                            {% for post in posts %}
-                                {% include 'post/show.html.twig' with {'post': post} %}
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+					<div
+						class="card-footer bg-light">
+						<!-- Affichage des posts de l'utilisateur -->
+						<div class="card-header">Posts</div>
+						<div class="card-body">
+							{% if numberOfPosts == 0 %}
+								<p>Il n'y a pas de post</p>
+							{% else %}
+								{% for post in posts %}
+									{% include 'post/show.html.twig' with {'post': post} %}
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Report User Modal -->
+		<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reportModalLabel">Report User</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						{{ render(controller('App\\Controller\\UserController::reportuser', {'id': user.id})) }}
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Success Modal HTML -->
+		<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="successModalLabel">Report</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						Le report a été envoyé avec succès!
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script>
+			$(document).ready(function () { // Trigger modal open
+				$('.btn[data-target="#reportModal"]').click(function () {
+					$('#reportModal').modal('show');
+				});
+
+				$('.close').on('click', function () {
+					$('#reportModal').modal('hide');
+				});
+			});
+		</script>
+		
+
+	{% endblock %}
+	{% block javascripts %}
+	{{ parent() }}
+	<script>
+	$(document).ready(function() {
+		// Function to parse query parameters from the URL
+		function getQueryParam(param) {
+			var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
+			return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
+		}
+
+		// Function to remove a specific query parameter
+		function removeQueryParam(parameter) {
+			var url = document.location.href;
+			var urlparts = url.split('?');
+			
+			if (urlparts.length >= 2) {
+				var prefix = encodeURIComponent(parameter) + '=';
+				var pars = urlparts[1].split(/[&;]/g);
+
+				// Loop through query strings, exclude target query param
+				for (var i = pars.length; i-- > 0;) {
+					if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+						pars.splice(i, 1);
+					}
+				}
+
+				// Rejoin the URL without the target parameter
+				url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
+				history.replaceState(null, document.title, url); // Replace the state in the history
+			}
+		}
+
+		// Check for 'success' query parameter and show modal if present
+		var success = getQueryParam('success');
+		if (success) {
+			$('#successModal').modal('show');
+			removeQueryParam('success');  // Remove 'success' from URL
+		}
+
+		// Setup triggers for modals
+		$('.btn[data-target="#reportModal"]').click(function() {
+			$('#reportModal').modal('show');
+		});
+
+		$('.close').on('click', function() {
+			$('#reportModal').modal('hide');
+			$('#successModal').modal('hide');
+		});
+	});
+	</script>
+	{% endblock %}
+
