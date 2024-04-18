@@ -1,0 +1,165 @@
+{% block unique_content %}
+
+	<!-- Report Post Modal -->
+	<div class="modal fade" id="reportModalPost-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalPostLabel-{{ post.id }}" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="reportModalPostLabel-{{ post.id }}">Report Post</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					{{ render(controller('App\\Controller\\PostController::reportPost', {'id': post.id})) }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Comment Modal -->
+	<div class="modal fade" id="modalCommentLabel-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="modalCommentLabel-{{ post.id }}" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalCommentLabel-{{ post.id }}">Répondre à @{{ post.user.username }}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="tweet-wrap" style="margin: 0; padding-bottom: 0;">
+					<div class="tweet-header" >
+						<!-- If user has a image, display it -->
+						{% if post.user.image %}
+							<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
+						{% else %}
+							<img src="asset('uploads/images/default.png" alt="" class="avator">
+						{% endif %}
+
+						<div class="tweet-header-info">
+						{% if post.user.lastname != null and post.user.firstname != null %}
+							{{ post.user.firstname }} {{ post.user.lastname }}
+						{% else %}
+							{{ post.user.username }}
+						{% endif %}
+						<span>@{{ post.user.username }}</span>
+						<span>
+							{{ post.createdAt|date('d M, Y') }}
+						</span>
+						<p>{{ post.body }}</p>
+						</div>
+					</div>
+				</div>
+				<hr>
+				<div class="modal-body">
+					{{ render(controller('App\\Controller\\PostController::comment', {'id': post.id})) }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Success Modal HTML -->
+	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="successModalLabel">Report</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Le report a été envoyé avec succès!
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+	{% block javascripts %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('error')) {
+				if (urlParams.get('error') === 'superlike_limit') {
+					alert('Tu ne peux pas superliker plus d\'une fois par semaine!');
+					// Remove the query parameters from the URL
+					window.history.replaceState({}, document.title, window.location.pathname);
+				}
+			}
+		});
+		$(document).ready(function () {
+			$('.btn[data-bs-toggle="modal"]').off('click').on('click', function () {
+				var targetId = $(this).attr('data-bs-target');
+				$(targetId).modal('show');
+			});
+
+			$('.close').click(function() {
+				var modalId = $(this).closest('.modal').attr('id');
+				var modalElement = $('#' + modalId);
+				var modalInstance = bootstrap.Modal.getInstance(modalElement);
+				modalInstance.hide();
+			});
+		});
+	$(document).ready(function () {
+        // Parse query parameters from the URL
+        function getQueryParam(param) {
+            var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
+            return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
+        }
+
+        // Check for the success parameter in the URL
+        const successParam = getQueryParam('success');
+        if (successParam) {
+            $('#successModal').modal('show');
+            var newUrl = window.location.href.replace(new RegExp("([&\?])success=[^&]*", "g"), "");
+            window.history.replaceState(null, document.title, newUrl);
+        }
+
+        // Setup event handlers for modal triggers
+        $('.btn[data-bs-toggle="modal"]').on('click', function () {
+            var targetId = $(this).attr('data-bs-target');
+            $(targetId).modal('show');
+        });
+
+        $('.close').on('click', function () {
+            var modalId = $(this).closest('.modal').attr('id');
+            $('#' + modalId).modal('hide');
+        });
+
+        // Remove excess modal backdrops when modal is hidden
+        $('.modal').on('hidden.bs.modal', function () {
+            $('.modal-backdrop').remove();
+        });
+    });
+    document.addEventListener('click', function() {
+        const modals = document.querySelectorAll('.modal-backdrop.fade.show');
+
+        if (modals.length > 1) {
+            for (let i = 1; i < modals.length; i++) {
+                modals[i].remove();
+            }
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.tweet-wrap').addEventListener('click', function(e) {
+            // Checking if the clicked element or its parent has a class 'tweet-wrap'
+            if (e.target.matches('.btn, .btn *, .dropdown-button, .dropdown-button *, .dropdown-content, .dropdown-content *, a, a *')) {
+                return;
+            }
+
+            // Checking if the clicked element or its parent has a class 'tweet-wrap'
+            let target = e.target.closest('.tweet-wrap');
+            if (target) {
+                let postId = target.dataset.postId;
+                redirectToPost(postId);
+            }
+        });
+    });
+
+    function redirectToPost(postId) {
+        window.location.href = `/post/status/${postId}`;
+    }
+	</script>
+    
+{% endblock %}

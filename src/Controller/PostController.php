@@ -124,6 +124,33 @@ class PostController extends AbstractController
         ]);
     }
 
+    #[Route('/status/{id}', name: 'app_single_post', methods: ['GET', 'POST'])]
+    public function singlePost(CommentRepository $commentRepository, Post $post, LikeRepository $likeRepository, Request $request, EntityManagerInterface $entityManager): Response
+    {;
+
+        // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
+        $like = $likeRepository->findOneBy([]);
+        $superlike = $likeRepository->findOneBy([]);
+        $comment = $commentRepository->findOneBy([]);
+
+        $numberOfLikes = $likeRepository->countLikes($post);
+        $numberOfComments = $commentRepository->countComments($post);
+
+        $numberOfSuperlikes = count($likeRepository->findBy(['superlike' => $superlike]));
+        $numberOfSuperlikes = count($likeRepository->findBy(['post' => $post]));
+
+
+        // Pass the form view to the template
+        return $this->render('post/single-post.html.twig', [
+            'post' => $post,
+            'like' => $like,
+            'numberOfLikes' => $numberOfLikes,
+            'numberOfSuperlikes' => $numberOfSuperlikes,
+            'numberOfComments' => $numberOfComments,
+        ]);
+    }
+
+
     #[Route('/{id}/edit', name: 'app_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {

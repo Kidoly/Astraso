@@ -29,16 +29,11 @@
 			overflow-x: auto; /* Activer le défilement horizontal */
 			height: 100vh; /* Définir la hauteur maximale du conteneur */
 			scrollbar-width: none; /* Masquer la barre de défilement */
-
+			display: inline-block;
 		}
 
 		.trends {
 			grid-column: 3 / 4;
-		}
-
-
-		.posts {
-			display: inline-block; /* Afficher les éléments en ligne */
 		}
 	</style>
 
@@ -88,16 +83,22 @@
 						</div>
 						<div class="posts">
 							{% for post in posts %}
-								{% include 'post/show.html.twig' with {'post': post} %}
+								<div class="tweet-wrap" id="post-{{ post.id }}" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
+									{% include 'post/show.html.twig' with {'post': post} %}
+								</div>
+								{% set included = false %}
+
+								{% if not included %}
+									{% include 'post/modals.html.twig' %}
+									{% set included = true %}
+								{% endif %}
 							{% endfor %}
 						</div>
 
 						<div class="trends">
 							<!-- Ici, vous pouvez ajouter le code pour afficher les tendances -->
 							<!-- Par exemple, les sujets tendances ou les hashtags populaires -->
-								<div>
-									<span>
-								terst dnkdfdsfs
+								<div><span>
 							</span>
 						</div>
 

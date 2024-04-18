@@ -1,25 +1,25 @@
-{% extends 'base.html.twig' %}
 {% block body %}
+	<div>
+		<div
+			class="tweet-header">
+			<!-- If user has a image, display it -->
+			{% if post.user.image %}
+				<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
+					<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
+				</a>
+			{% else %}
+				<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
+					<img src="{{ asset('uploads/images/default.png') }}" alt="Profile picture" class="avator">
+				</a>
+			{% endif %}
 
-	<div class="container mt-4">
-		<div class="tweet-wrap">
-			<div class="tweet-header">
-				<!-- If user has a image, display it -->
-				{% if post.user.image %}
-					<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
-						<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
-					</a>
-				{% else %}
-					<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
-						<img src="{{ asset('uploads/images/default.png') }}" alt="Profile picture" class="avator">
-					</a>
-				{% endif %}
-
-				<div class="tweet-header-info">
+			<div
+				class="tweet-header-info">
 				<!-- Make the name and username clickable -->
 				<a href="{{ path('app_user_show', {'id': post.user.id}) }}">
 					{% if post.user.lastname != null and post.user.firstname != null %}
-						{{ post.user.firstname }} {{ post.user.lastname }}
+						{{ post.user.firstname }}
+						{{ post.user.lastname }}
 					{% else %}
 						{{ post.user.username }}
 					{% endif %}
@@ -38,190 +38,55 @@
 							{{ include('post/_delete_form.html.twig') }}
 						{% endif %}
 						<!-- Report post -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#reportModalPost-{{ post.id }}"><i class="fa-solid fa-flag"></i> Report</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#reportModalPost-{{ post.id }}">
+							<i class="fa-solid fa-flag"></i>
+							Report</button>
 					</div>
 				</div>
 				<p>{{ post.body }}</p>
 
-				</div>
 			</div>
-			<div class="tweet-img-wrap">
-				{% for imagePost in post.imagePosts %}
-					<img src="/uploads/images/{{ imagePost.image.image }}" class="tweet-img" alt="Post image" style="max-width:100%;">
-				{% endfor %}
-			</div>
-			<div class="tweet-info-counts">
-				{% if app.user %}
-					{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
-					{% set regularLikesCount = post.likes|filter(like => not like.superlike)|length %}
-					{% if userLike|length == 0 %}
-						<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
-							<i class="bi bi-heart"></i>
-							{{ regularLikesCount }}
-						</a>
-					{% else %}
-						<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
-							<i class="bi bi-heart-fill"></i>
-							{{ regularLikesCount }}
-						</a>
-					{% endif %}
-					{% set userSuperlike = post.likes|filter(like => like.user == app.user and like.superlike) %}
-					{% set superLikesCount = post.likes|filter(like => like.superlike)|length %}
-					{% if userSuperlike|length == 0 %}
-						<a href="{{ path('app_post_superlike', {'id': post.id}) }}" class="btn btn-info">
-							<i class="bi bi-star"></i>
-							{{ superLikesCount }}
-						</a>
-					{% else %}
-						<a href="{{ path('app_post_superunlike', {'id': post.id}) }}" class="btn btn-secondary">
-							<i class="bi bi-star-fill"></i>
-							{{ superLikesCount }}
-						</a>
-					{% endif %}
+		</div>
+		<div class="tweet-img-wrap">
+			{% for imagePost in post.imagePosts %}
+				<img src="/uploads/images/{{ imagePost.image.image }}" class="tweet-img" alt="Post image" style="max-width:100%;">
+			{% endfor %}
+		</div>
+		<div class="tweet-info-counts">
+			{% if app.user %}
+				{% set userLike = post.likes|filter(like => like.user == app.user and not like.superlike) %}
+				{% set regularLikesCount = post.likes|filter(like => not like.superlike)|length %}
+				{% if userLike|length == 0 %}
+					<a href="{{ path('app_post_like', {'id': post.id}) }}" class="btn btn-primary">
+						<i class="bi bi-heart"></i>
+						{{ regularLikesCount }}
+					</a>
+				{% else %}
+					<a href="{{ path('app_post_unlike', {'id': post.id}) }}" class="btn btn-danger">
+						<i class="bi bi-heart-fill"></i>
+						{{ regularLikesCount }}
+					</a>
 				{% endif %}
-				<!-- Comment post -->
-				{% set commentsCount = post.comments|length %}
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCommentLabel-{{ post.id }}"><i class="fa-regular fa-comment"></i> {{ commentsCount }}</button>
-			</div>
-		</div>
-	</div>
-	<!-- Report Post Modal -->
-	<div class="modal fade" id="reportModalPost-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalPostLabel-{{ post.id }}" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="reportModalPostLabel-{{ post.id }}">Report Post</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					{{ render(controller('App\\Controller\\PostController::reportPost', {'id': post.id})) }}
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Comment Modal -->
-	<div class="modal fade" id="modalCommentLabel-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="modalCommentLabel-{{ post.id }}" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="modalCommentLabel-{{ post.id }}">Répondre à @{{ post.user.username }}</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="tweet-wrap" style="margin: 0; padding-bottom: 0;">
-					<div class="tweet-header" >
-						<!-- If user has a image, display it -->
-						{% if post.user.image %}
-							<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
-						{% else %}
-							<img src="asset('uploads/images/default.png" alt="" class="avator">
-						{% endif %}
-
-						<div class="tweet-header-info">
-						{% if post.user.lastname != null and post.user.firstname != null %}
-							{{ post.user.firstname }} {{ post.user.lastname }}
-						{% else %}
-							{{ post.user.username }}
-						{% endif %}
-						<span>@{{ post.user.username }}</span>
-						<span>
-							{{ post.createdAt|date('d M, Y') }}
-						</span>
-						<p>{{ post.body }}</p>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class="modal-body">
-					{{ render(controller('App\\Controller\\PostController::comment', {'id': post.id})) }}
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Success Modal HTML -->
-	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="successModalLabel">Report</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					Le report a été envoyé avec succès!
-				</div>
-			</div>
+				{% set userSuperlike = post.likes|filter(like => like.user == app.user and like.superlike) %}
+				{% set superLikesCount = post.likes|filter(like => like.superlike)|length %}
+				{% if userSuperlike|length == 0 %}
+					<a href="{{ path('app_post_superlike', {'id': post.id}) }}" class="btn btn-info">
+						<i class="bi bi-star"></i>
+						{{ superLikesCount }}
+					</a>
+				{% else %}
+					<a href="{{ path('app_post_superunlike', {'id': post.id}) }}" class="btn btn-secondary">
+						<i class="bi bi-star-fill"></i>
+						{{ superLikesCount }}
+					</a>
+				{% endif %}
+			{% endif %}
+			<!-- Comment post -->
+			{% set commentsCount = post.comments|length %}
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCommentLabel-{{ post.id }}">
+				<i class="fa-regular fa-comment"></i>
+				{{ commentsCount }}</button>
 		</div>
 	</div>
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const urlParams = new URLSearchParams(window.location.search);
-			if (urlParams.has('error')) {
-				if (urlParams.get('error') === 'superlike_limit') {
-					alert('Tu ne peux pas superliker plus d\'une fois par semaine!');
-					// Remove the query parameters from the URL
-					window.history.replaceState({}, document.title, window.location.pathname);
-				}
-			}
-		});
-		$(document).ready(function () {
-			$('.btn[data-bs-toggle="modal"]').off('click').on('click', function () {
-				var targetId = $(this).attr('data-bs-target');
-				$(targetId).modal('show');
-			});
-
-			$('.close').click(function() {
-				var modalId = $(this).closest('.modal').attr('id');
-				var modalElement = $('#' + modalId);
-				var modalInstance = bootstrap.Modal.getInstance(modalElement);
-				modalInstance.hide();
-			});
-		});
-	</script>
 {% endblock %}
-	{% block javascripts %}
-	{{ parent() }}
-	<script>
-	$(document).ready(function() {
-		// Function to parse query parameters from the URL
-		function getQueryParam(param) {
-			var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
-			return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
-		}
-
-		// This assumes each post has a unique data attribute or way to specify which modal to show
-		$('.post-container').each(function() {
-			var postId = $(this).data('post-id'); // Assuming each post container has a data attribute for post ID
-			var success = getQueryParam('success-' + postId); // Check for a unique success param for each post
-
-			if (success) {
-				$('#successModal-' + postId).modal('show'); // Show success modal specific to the post
-				// Remove specific success query param to avoid re-triggering
-				var newUrl = window.location.href.replace(new RegExp("([&\?])success-" + postId + "=[^&]*", "g"), "");
-				window.history.replaceState(null, document.title, newUrl);
-			}
-		});
-
-		// Modal open triggers should be scoped to specific posts as well
-		$('.btn[data-bs-target]').on('click', function() {
-			var targetId = $(this).attr('data-bs-target');
-			$(targetId).modal('show');
-		});
-
-		$('.close').on('click', function() {
-			var modalId = $(this).closest('.modal').attr('id');
-			$('#' + modalId).modal('hide');
-		});
-		$('.modal').on('hidden.bs.modal', function () {
-			$('.modal-backdrop').remove();
-		});
-	});
-
-	</script>
-	{% endblock %}
-
