@@ -1,5 +1,67 @@
+/* Import de Bootstrap */
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+
+/* Personnalisation des couleurs */
+:root {
+    --body-bg: #f7f9f9;
+    --body-color: #000;
+    --primary-color: #7856ff;
+    --secondary-color: #9c9c9c99;
+    --success-color: #5e44c6;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+
+    --primary-color-hover: #5e44c6;
+    --secondary-color-hover: #a1aaaf;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+
+/* Application des couleurs personnalisées */
 body {
-  background-color: #ffffff;
+    background-color: var(--body-bg);
+    color: var(--body-color);
+    display: grid;
+    height: 100vh;
+    grid-template-columns: repeat(3, 2fr);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-success:hover,
+.btn-info:hover,
+.btn-warning:hover,
+.btn-danger:hover {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+}
+
+.btn-primary:focus,
+.btn-secondary:focus,
+.btn-success:focus,
+.btn-info:focus,
+.btn-warning:focus,
+.btn-danger:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
 * {
@@ -176,4 +238,88 @@ input[type="file"]::file-selector-button:hover {
 
 .css-dropdown:hover .dropdown-content {
   display: block;
+}
+
+.btn-primary:active
+.btn-secondary:active,
+.btn-success:active,
+.btn-info:active,
+.btn-warning:active,
+.btn-danger:active {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-success:disabled,
+.btn-info:disabled,
+.btn-warning:disabled,
+.btn-danger:disabled {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Styles pour les liens */
+a {
+    color: var(--primary-color);
+}
+
+a:hover,
+a:focus {
+    color: darken(var(--primary-color), 10%);
+}
+
+/* Styles pour les inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+    background-color: var(--body-bg);
+    color: var(--body-color);
+    border-color: var(--secondary-color-hover);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+
+.navbar-custom {
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profil-card {
+  background-color: var(--body-bg);
+  position: relative;
+  padding: 25px;
+  border-radius: 30px;
+  transition: background-color 0.3s;
+}
+.profil-card:hover {
+  background-color: var(--secondary-color);
+}
+
+.dropdown-menu {
+    position: absolute; /* Le menu déroulant doit avoir une position absolue */
+    top: 100%; /* Positionnez-le au-dessus de la div profil-card */
+    left: 0; /* Positionnez-le à gauche de la div profil-card */
+    z-index: 1000; /* Assurez-vous que le menu déroulant est en avant-plan */
+    display: none; /* Cachez-le par défaut */
+}  
+
+.dropdown-menu .show {
+  display: block; /* Affichez-le lorsque la classe 'show' est présente */
+
+  background-color: var(--body-bg);
+  border-radius: 20px;
+  display: block;
+  color: var(--body-color);
 }

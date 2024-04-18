@@ -5,15 +5,15 @@
 
 {% block body %}
 
-	{% block navbar %}
-		{% include 'home/_navbar.html.twig' %}
-	{% endblock %}
+{% block navbar %}
+        {{ parent() }}
+{% endblock %}
 
-	<div class="container mt-4">
-		<div class="row justify-content-center">
-			<div class="col-md-8">
-				<div class="card">
-					<div class="card-header">User Profile</div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div>
+            <div class="card">
+                <div class="card-header">User Profile</div>
 
 					<div class="card-body">
 						{% if user.image %}
@@ -48,6 +48,13 @@
 									<th scope="row">Email</th>
 									<td>{{ user.email }}</td>
 								</tr>
+                                {% if user.institution %}
+                                    <tr>
+                                        <th scope="row">Institution</th>
+                                        <td>{{ user.institution.name }}</td>
+                                    </tr>
+                                {% endif %}
+
 							</tbody>
 						</table>
 					</div>
@@ -206,4 +213,7 @@
 	});
 	</script>
 	{% endblock %}
+	{% block footer %}
+        {% include 'home/_trends.html.twig' %}
+    {% endblock %}
 

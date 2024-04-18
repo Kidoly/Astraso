@@ -4,107 +4,29 @@
 {% endblock %}
 
 {% block body %}
-
 	{% block navbar %}
-		{% include 'home/_navbar.html.twig' %}
+		{{ parent() }}
 	{% endblock %}
-
-	<style>
-		.container {
-			margin-top: 20px;
-		}
-
-		.grid-container {
-			display: grid;
-			grid-template-columns: 1fr 2fr 1fr;
-			gap: 20px;
-		}
-
-		.preview {
-			grid-column: 1 / 2;
-		}
-
-		.posts {
-			grid-column: 2 / 3;
-			overflow-x: auto; /* Activer le défilement horizontal */
-			height: 100vh; /* Définir la hauteur maximale du conteneur */
-			scrollbar-width: none; /* Masquer la barre de défilement */
-			display: inline-block;
-		}
-
-		.trends {
-			grid-column: 3 / 4;
-		}
-	</style>
-
-	<div class="example-wrapper">
-		<div class="container">
+	{% block content %}
+		<div class="container mt-4">
 			<div class="row justify-content-center">
-				<div class="col-md-12">
-					<div class="grid-container">
-						<div
-							class="preview">
-							<!-- Ici, vous pouvez ajouter le code pour afficher un aperçu du compte -->
-
-							<div class="card">
-								<div class="card-header">
-									<h5>{{ app.user.username }}</h5>
-								</div>
-								<div class="card-body">
-									{% if user.image %}
-										<img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
-									{% else %}
-										<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
-									{% endif %}
-
-									{% if app.user.firstname %}
-										<p class="card-text">{{ app.user.firstname }}</p>
-									{% endif %}
-									{% if app.user.biography %}
-										<p class="card-text">{{ app.user.biography }}</p>
-									{% endif %}
-
-									<p class="card-text">Nom:
-										{{ app.user.lastname }}</p>
-									<p class="card-text">Email:
-										{{ app.user.email }}</p>
-									<p class="card-text">Date de création:
-										{{ app.user.createdAt|date('d/m/Y H:i') }}</p>
-								</div>
-								<div class="card-footer text-muted">
-									<a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="btn btn-primary">
-										<i class="bi bi-person"></i>
-									</a>
-									<a href="{{ path('app_user_edit', {'id': app.user.id}) }}" class="btn btn-primary">
-										<i class="bi bi-gear-fill"></i>
-									</a>
-								</div>
-							</div>
+				<div class="posts">
+					{% for post in posts %}
+						<div class="tweet-wrap" id="post-{{ post.id }}" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
+							{% include 'post/show.html.twig' with {'post': post} %}
 						</div>
-						<div class="posts">
-							{% for post in posts %}
-								<div class="tweet-wrap" id="post-{{ post.id }}" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
-									{% include 'post/show.html.twig' with {'post': post} %}
-								</div>
-								{% set included = false %}
+						{% set included = false %}
 
-								{% if not included %}
-									{% include 'post/modals.html.twig' %}
-									{% set included = true %}
-								{% endif %}
-							{% endfor %}
-						</div>
-
-						<div class="trends">
-							<!-- Ici, vous pouvez ajouter le code pour afficher les tendances -->
-							<!-- Par exemple, les sujets tendances ou les hashtags populaires -->
-								<div><span>
-							</span>
-						</div>
-
-					</div>
+						{% if not included %}
+							{% include 'post/modals.html.twig' %}
+							{% set included = true %}
+						{% endif %}
+					{% endfor %}
 				</div>
 			</div>
 		</div>
-	</div>
-</div>{% endblock %}
+	{% endblock %}
+	{% block footer %}
+		{% include 'home/_trends.html.twig' %}
+	{% endblock %}
+{% endblock %}
