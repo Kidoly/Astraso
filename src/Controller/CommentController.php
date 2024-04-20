@@ -59,14 +59,22 @@ class CommentController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $this->addFlash('success', 'Comment updated successfully.');
 
-            return $this->redirectToRoute('app_comment_index', [], Response::HTTP_SEE_OTHER);
+            // Get referrer URL
+            $referrer = $request->headers->get('referer');
+            if (!$referrer) {
+                // Fallback if no referrer is available
+                $referrer = $this->generateUrl('homepage');
+            }
+
+            // Redirect to the referrer URL
+            return $this->redirect($referrer);
         }
 
-        return $this->render('comment/edit.html.twig', [
+        return $this->render('comment/edit_modal_form.html.twig', [
+            'form' => $form->createView(),
             'comment' => $comment,
-            'form' => $form,
-            'post' => $comment->getPost()
         ]);
     }
 

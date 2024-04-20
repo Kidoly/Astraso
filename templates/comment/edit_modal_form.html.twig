@@ -1,0 +1,10 @@
+{{ form_start(form, {
+    'action': path('app_comment_edit', {'id': comment.id}),
+    'method': 'POST',
+}) }}
+{{ form_widget(form) }}
+<div class="modal-footer">
+	<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+	<input type="submit" class="btn btn-primary" value="Modifier"/>
+</div>
+{{ form_end(form) }}

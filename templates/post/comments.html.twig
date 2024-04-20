@@ -22,10 +22,10 @@
 						<div class="css-dropdown">
 							<button class="dropdown-button">•••</button>
 							<div class="dropdown-content">
-								<a href="{{ path('app_comment_edit', {'id': comment.id}) }}?returnUrl={{ app.request.uri|url_encode }}">
-									<i class="fa-solid fa-pen"></i>
-									Modifier
-								</a>
+							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editCommentModal-{{ comment.id }}">
+								<i class="fa-solid fa-pen"></i>
+								Modifier
+                            </button>
 								{% if (app.user and app.user.id == comment.user.id) or app.user == post.user %}
 									{{ include('comment/_delete_form.html.twig') }}
 								{% endif %}
@@ -37,7 +37,7 @@
 			</div>
 		</div>
 		<!-- Modify Comment Modal -->
-		<div class="modal fade" id="modifyCommentModal-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="modifyCommentModal-{{ post.id }}" aria-hidden="true">
+            <div class="modal fade" id="editCommentModal-{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel-{{ comment.id }}" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -74,21 +74,24 @@
 					</div>
 					<hr>
 					<div class="modal-body">
-						{{ render(controller('App\\Controller\\CommentController::edit', {'comment': comment.id})) }}
+                        {{ render(controller('App\\Controller\\CommentController::edit', {'id': comment.id})) }}
 					</div>
 				</div>
 			</div>
 		</div>
 		<script>
-			// Get the modal
-var modifyCommentModal = document.getElementById('modifyCommentModal- {{ comment.id }}');
+            $(document).ready(function() {
+                // Trigger modal with Bootstrap 4
+                $('.btn[data-toggle="modal"]').click(function() {
+                    var targetId = $(this).attr('data-target');
+                    $(targetId).modal('show');
+                });
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function (event) {
-if (event.target == modifyCommentModal) {
-modifyCommentModal.style.display = "none";
-}
-}
-		</script>
+                $('.close').click(function() {
+                    $(this).closest('.modal').modal('hide');
+                });
+            });
+        </script>
+
 	{% endfor %}
 </div>
