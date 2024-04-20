@@ -1,0 +1,42 @@
+<div class="comments">
+	{% for comment in comments %}
+		<div class="comment">
+			<div class="tweet-header">
+				{% if comment.user.image %}
+					<img src="{{ asset('uploads/images/' ~ comment.user.image.image) }}" alt="Profile picture" class="avator">
+				{% else %}
+					<img src="{{ asset('uploads/images/default.png') }}" alt="" class="avator">
+				{% endif %}
+				<div class="tweet-header-info">
+					<a href="{{ path('app_user_show', {'id': comment.user.id}) }}">
+						{% if comment.user.lastname != null and comment.user.firstname != null %}
+							{{ comment.user.firstname }}
+							{{ comment.user.lastname }}
+						{% else %}
+							{{ comment.user.username }}
+						{% endif %}
+						<span>@{{ comment.user.username }}</span>
+					</a>
+					<span>{{ comment.createdAt|date('d M, Y') }}</span>
+					<div class="css-dropdown">
+						<button class="dropdown-button">•••</button>
+						<div class="dropdown-content">
+							{% if app.user and app.user.id == comment.user.id %}
+								<a href="{{ path('app_comment_edit', {'id': comment.id}) }}?returnUrl={{ app.request.uri|url_encode }}">
+									<i class="fa-solid fa-pen"></i>
+									Modifier
+								</a>
+								{{ include('comment/_delete_form.html.twig') }}
+							{% endif %}
+							<!-- Report comment -->
+							<button type="button" data-bs-toggle="modal" data-bs-target="#reportModalComment-{{ comment.id }}">
+								<i class="fa-solid fa-flag"></i>
+								Report</button>
+						</div>
+					</div>
+					<p>{{ comment.body }}</p>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+</div>

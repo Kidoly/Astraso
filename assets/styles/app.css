@@ -183,9 +183,9 @@ input[type="file"]::file-selector-button:hover {
   }
 }
 .css-dropdown {
-  position: relative;
+  position: absolute;
   display: inline-block;
-  float: right;
+  right: 36%;
 }
 
 .dropdown-button {
@@ -318,4 +318,15 @@ textarea:focus {
   border-radius: 20px;
   display: block;
   color: var(--body-color);
+}
+
+.comment {
+  background-color: var(--body-bg);
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.comments {
+  padding-top: 5%;
 }

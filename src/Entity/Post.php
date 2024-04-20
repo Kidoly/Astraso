@@ -32,16 +32,16 @@ class Post
     #[ORM\Column]
     public ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $comments;
 
     #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'post', orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $reports;
 
-    #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $hashtagpcs;
 
     #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', cascade: ['persist'], orphanRemoval: true)]

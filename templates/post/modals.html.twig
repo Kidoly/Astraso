@@ -45,6 +45,7 @@
 						<span>
 							{{ post.createdAt|date('d M, Y') }}
 						</span>
+						<h5>{{ post.title }}</h5>
 						<p>{{ post.body }}</p>
 						</div>
 					</div>
@@ -142,24 +143,21 @@
 
 
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('.tweet-wrap').addEventListener('click', function(e) {
-            // Checking if the clicked element or its parent has a class 'tweet-wrap'
-            if (e.target.matches('.btn, .btn *, .dropdown-button, .dropdown-button *, .dropdown-content, .dropdown-content *, a, a *')) {
-                return;
-            }
+		document.querySelector('.posts').addEventListener('click', function(e) {
+			// Checking if the clicked element or its parent has a class 'tweet-wrap'
+			let target = e.target.closest('.tweet-wrap');
+			if (target) {
+				let postId = target.dataset.postId;
+				if (postId) {
+					redirectToPost(postId);
+				}
+			}
+		});
 
-            // Checking if the clicked element or its parent has a class 'tweet-wrap'
-            let target = e.target.closest('.tweet-wrap');
-            if (target) {
-                let postId = target.dataset.postId;
-                redirectToPost(postId);
-            }
-        });
-    });
-
-    function redirectToPost(postId) {
-        window.location.href = `/post/status/${postId}`;
-    }
+		function redirectToPost(postId) {
+			window.location.href = `/post/status/${postId}`;
+		}
+	});
 	</script>
     
 {% endblock %}

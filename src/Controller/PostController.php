@@ -131,7 +131,7 @@ class PostController extends AbstractController
         // Récupérer l'entité Like correspondant à l'utilisateur actuel et à l'utilisateur suivi
         $like = $likeRepository->findOneBy([]);
         $superlike = $likeRepository->findOneBy([]);
-        $comment = $commentRepository->findOneBy([]);
+        $comments = $commentRepository->findBy(['post' => $post]);
 
         $numberOfLikes = $likeRepository->countLikes($post);
         $numberOfComments = $commentRepository->countComments($post);
@@ -147,6 +147,7 @@ class PostController extends AbstractController
             'numberOfLikes' => $numberOfLikes,
             'numberOfSuperlikes' => $numberOfSuperlikes,
             'numberOfComments' => $numberOfComments,
+            'comments' => $comments
         ]);
     }
 
@@ -174,7 +175,8 @@ class PostController extends AbstractController
             // Clear existing images
             foreach ($post->getImagePosts() as $imagePost) {
                 $entityManager->remove($imagePost);
-                // Optionally delete the image file from the server here
+                // Delete the image file from the server here
+                $entityManager->remove($imagePost->getImage());
             }
             $entityManager->flush();  // Ensure removal is executed immediately
 
