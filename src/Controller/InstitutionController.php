@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\Follow;
 use App\Entity\Institution;
 use App\Form\InstitutionType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,10 +19,27 @@ class InstitutionController extends AbstractController
     #[Route('/', name: 'app_institution_index', methods: ['GET'])]
     public function index(InstitutionRepository $institutionRepository): Response
     {
+        $user = $this->getUser();
+        $institutions = $institutionRepository->findAll();
+        $follows = [];
+
+        foreach ($institutions as $institution) {
+            $isFollowing = false;
+            foreach ($institution->getFollows() as $follow) {
+                if ($follow->getFollowingUser() === $user) {
+                    $isFollowing = true;
+                    break;
+                }
+            }
+            $follows[$institution->getId()] = $isFollowing;
+        }
+
         return $this->render('institution/index.html.twig', [
-            'institutions' => $institutionRepository->findAll(),
+            'institutions' => $institutions,
+            'follows' => $follows,
         ]);
     }
+
 
     #[Route('/new', name: 'app_institution_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -77,5 +96,35 @@ class InstitutionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_institution_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/follow/{id}', name: 'app_institution_follow', methods: ['POST'])]
+    public function follow(Institution $institution, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $follow = new Follow();
+        $follow->setFollowingUser($user);
+        $follow->setInstitution($institution);
+        $entityManager->persist($follow);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_institution_index');
+    }
+
+    #[Route('/unfollow/{id}', name: 'app_institution_unfollow', methods: ['POST'])]
+    public function unfollow(Institution $institution, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $follow = $entityManager->getRepository(Follow::class)->findOneBy([
+            'following_user' => $user,
+            'institution' => $institution
+        ]);
+
+        if ($follow) {
+            $entityManager->remove($follow);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_institution_index');
     }
 }
