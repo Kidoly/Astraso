@@ -21,6 +21,7 @@ class ReportType extends AbstractType
             ->add('reason', EntityType::class, [
                 'class' => Reason::class,
                 'choice_label' => 'name',
+                'label' => 'Raison'
             ]);
     }
 

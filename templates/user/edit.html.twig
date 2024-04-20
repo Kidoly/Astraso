@@ -1,20 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User
+{% block title %}Edit User{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/user.css') }}">
+    <style>
+        /* Supprimez la hauteur maximale et ajoutez une marge entre les labels */
+        .form-group label {
+            max-height: none; /* Supprimez la hauteur maximale */
+            margin-bottom: 0.5rem; /* Ajoutez une marge en bas */
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-	<h1>Edit User</h1>
+    {% block navbar %}
+        {% include 'home/_navbar.html.twig' %}
+    {% endblock %}
+    {% block content %}
+        <div class="container mt-4">
+            <h1 class="mb-4">Edit User</h1>
 
-	{{ form_start(form) }}
-	{{ form_row(form.image) }}
-	{{ form_row(form.username) }}
-	{{ form_row(form.password) }}
-	{{ form_row(form.firstName) }}
-	{{ form_row(form.lastName) }}
-	{{ form_row(form.email) }}
-	{{ form_row(form.biography) }}
-	{{ form_row(form.institution) }}
-	<button type="submit" class="btn btn-primary">Update</button>
-	{{ form_end(form) }}
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_errors(form) }} {# Affichez les erreurs globales du formulaire #}
+            {% for child in form %}
+                <div>
+                    {{ form_label(child, null, {'label_attr': {'class': ''}}) }} {# Retirez la classe col-sm-2 ici #}
+                    <div>
+                        {{ form_widget(child, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(child) }} {# Affichez les erreurs du champ #}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="form-group row">
+                <div">
+                    <!-- Button update -->
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <!-- Button return qui fait revenir d'où l'on vient -->
+                    <a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="btn btn-secondary">Return</a>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    {% endblock %}
+
+    {% block footer %}
+        {% include 'home/_trends.html.twig' %}
+    {% endblock %}
 {% endblock %}
+

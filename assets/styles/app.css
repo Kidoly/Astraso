@@ -1,3 +1,332 @@
+/* Import de Bootstrap */
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
+
+/* Personnalisation des couleurs */
+:root {
+  --body-bg: #f7f9f9;
+  --body-color: #000;
+  --primary-color: #7856ff;
+  --secondary-color: #9c9c9c99;
+  --success-color: #5e44c6;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+
+  --primary-color-hover: #5e44c6;
+  --secondary-color-hover: #a1aaaf;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+/* Application des couleurs personnalisées */
 body {
-  background-color: #ffffff;
+  background-color: var(--body-bg);
+  color: var(--body-color);
+  display: grid;
+  height: 100vh;
+  grid-template-columns: repeat(3, 2fr);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-success:hover,
+.btn-info:hover,
+.btn-warning:hover,
+.btn-danger:hover {
+  background-color: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
+}
+
+.btn-primary:focus,
+.btn-secondary:focus,
+.btn-success:focus,
+.btn-info:focus,
+.btn-warning:focus,
+.btn-danger:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.form-control,
+.form-select {
+  border-radius: 5;
+  border: 0.5px solid rgb(51, 54, 57);
+  color: #c785fd;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #c785fd !important;
+  color: #c785fd !important;
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+  color: #c785fd !important;
+}
+
+label {
+  color: #c785fd !important;
+}
+
+.form-group.focused label,
+.form-group.focused .form-control,
+.form-group.focused .form-select {
+  color: #c785fd !important; /* set label and input text color to #C785FD */
+}
+
+input[type="file"]::file-selector-button {
+  border: none;
+  color: #c785fd !important;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #c785fd !important; /* set file chooser button hover background color */
+}
+
+.avator {
+  border-radius: 100px;
+  width: 48px;
+  margin-right: 15px;
+}
+
+.tweet-wrap {
+  max-width: 490px;
+  background: #fff;
+  border-radius: 3px;
+  padding: 30px;
+  border-top: 1px solid #e6ecf0;
+}
+
+.tweet-wrap:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.tweet-header {
+  display: flex;
+  align-items: flex-start;
+  font-size: 14px;
+}
+.tweet-header-info {
+  font-weight: bold;
+}
+.tweet-header-info span {
+  font-weight: normal;
+  margin-left: 5px;
+}
+.tweet-header-info p {
+  font-weight: normal;
+  margin-top: 5px;
+}
+.tweet-img-wrap {
+  padding-left: 60px;
+}
+
+.tweet-info-counts {
+  display: flex;
+  justify-content: space-evenly;
+  margin-left: 60px;
+  margin-top: 10px;
+}
+
+@media screen and(max-width:430px) {
+  body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .tweet-header {
+    flex-direction: column;
+  }
+  .tweet-header img {
+    margin-bottom: 20px;
+  }
+  .tweet-header-info p {
+    margin-bottom: 30px;
+  }
+  .tweet-img-wrap {
+    padding-left: 0;
+  }
+  .tweet-info-counts {
+    display: flex;
+    margin-left: 0;
+  }
+  .tweet-info-counts div {
+    margin-right: 10px;
+  }
+}
+.css-dropdown {
+  position: absolute;
+  display: inline-block;
+  right: 36%;
+}
+
+.dropdown-button {
+  background-color: transparent;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  outline: none;
+}
+
+.dropdown-button:hover,
+.dropdown-button:focus {
+  background-color: #f0f0f0;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  text-align: left;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: Arial, sans-serif; /* Specify the font-family */
+  font-weight: normal; /* Set font-weight to normal to override any bold settings */
+  white-space: nowrap;
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.css-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.btn-primary:active .btn-secondary:active,
+.btn-success:active,
+.btn-info:active,
+.btn-warning:active,
+.btn-danger:active {
+  background-color: var(--primary-color-hover);
+  border-color: var(--primary-color-hover);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-success:disabled,
+.btn-info:disabled,
+.btn-warning:disabled,
+.btn-danger:disabled {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Styles pour les liens */
+a {
+  color: var(--primary-color);
+}
+
+a:hover,
+a:focus {
+  color: darken(var(--primary-color), 10%);
+}
+
+/* Styles pour les inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+  background-color: var(--body-bg);
+  color: var(--body-color);
+  border-color: var(--secondary-color-hover);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+}
+
+.navbar-custom {
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profil-card {
+  background-color: var(--body-bg);
+  position: relative;
+  padding: 25px;
+  border-radius: 30px;
+  transition: background-color 0.3s;
+}
+.profil-card:hover {
+  background-color: var(--secondary-color);
+}
+
+.dropdown-menu {
+  position: absolute; /* Le menu déroulant doit avoir une position absolue */
+  top: 100%; /* Positionnez-le au-dessus de la div profil-card */
+  left: 0; /* Positionnez-le à gauche de la div profil-card */
+  z-index: 1000; /* Assurez-vous que le menu déroulant est en avant-plan */
+  display: none; /* Cachez-le par défaut */
+}
+
+.dropdown-menu .show {
+  display: block; /* Affichez-le lorsque la classe 'show' est présente */
+
+  background-color: var(--body-bg);
+  border-radius: 20px;
+  display: block;
+  color: var(--body-color);
+}
+
+.comment {
+  background-color: var(--body-bg);
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.comments {
+  padding-top: 5%;
 }

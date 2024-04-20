@@ -1,11 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Post{% endblock %}
+{% block title %}New Post
+{% endblock %}
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('styles/post.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Post</h1>
 
-    {{ include('post/_form.html.twig') }}
+	<h1>Crer un nouveau Post</h1>
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
+	{{ include('post/_form.html.twig') }}
+
 {% endblock %}

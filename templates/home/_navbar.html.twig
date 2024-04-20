@@ -1,39 +1,97 @@
-{% extends 'base.html.twig' %}
-
 {% block content %}
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<div class="container-fluid">
-			<!-- Ajout de la classe container-fluid -->
-			<!-- Élément à gauche -->
-				<div
-				class="d-flex align-items-center"> <!-- Création d'un lien vers la page de profil de l'utilisateur connecté -->
-				<a class="navbar-brand" href="{{ path('app_user_show', {'id': app.user.id}) }}">
-					{% if app.user.image %}
-						<img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
-					{% else %}
-						<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
-					{% endif %}
-				</a>
-			</div>
 
-
-			<!-- Élément central -->
-			<div class="d-flex align-items-center justify-content-center">
-				<form class="form-inline d-flex" action="{{ path('app_login') }}" method="GET">
-					<input class="form-control m-1" type="text" name="query" placeholder="Search" aria-label="Search">
-					<button class="btn btn-outline-primary m-1" type="submit">Go</button>
-				</form>
-			</div>
-
-
-			<!-- Élément à droite -->
-			<div class="d-flex align-items-center ml-auto">
-				{% if app.user.userIdentifier %}
-					<a class="btn btn-danger" href="{{ path('app_logout') }}">Déconnexion</a>
-				{% else %}
-					<a class="btn btn-primary" href="{{ path('app_login') }}">Connexion</a>
-				{% endif %}
-			</div>
-		</div>
-	</nav>
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
 {% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light flex-column navbar-custom">
+    <div class="container-fluid flex-column d-grid gap-2 h-100">    
+        <!-- Logo lien page principale -->
+        <a class="navbar-brand mb-3" href="{{ path('app_home') }}">
+            <img src="{{ asset('uploads/images/ASTRASO.png') }}" alt="Logo" width="130">
+        </a>
+
+        <!-- Liens vers les différentes pages -->
+        <ul class="navbar-nav mb-3 flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_home') }}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_home') }}">Explore</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_institution_index') }}">Institution</a>
+            </li>
+
+            <li class="nav-item">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_home')}}">Notifications</a>
+                </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_user_show', {'id': app.user.id}) }}">Profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_user_edit', {'id': app.user.id}) }}">Settings</a>
+            </li>
+
+
+        </ul>
+
+        <!-- Bouton pour ajouter un post -->
+        <a href="{{ path('app_post_new') }}" class="btn btn-success"><i class="bi bi-plus"></i></a>
+    
+        <!-- Lien vers la page de profil -->
+        
+        <div class="d-flex align-items-center mb-3 profil-card" id="profilCard">
+            
+            <div class="profile-info d-flex">
+                {% if app.user.image %}
+                    <img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
+                {% else %}
+                    <img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
+                {% endif %}
+                <div>
+                    <h6>{{ app.user.username }}</h6>
+                    <p class="mb-0">{{ app.user.firstname }}</p>
+                </div>
+            </div>
+            <i class="bi bi-gear-fill"></i>
+            <div class="dropdown-menu" aria-labelledby="profilCard" id="dropdownMenu">
+				<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
+			</div>
+            
+			
+        </div>
+    </div>
+</nav>
+
+
+
+{% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const profilCard = document.getElementById('profilCard');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        profilCard.addEventListener('click', function (event) {
+            dropdownMenu.classList.toggle('show');
+        });
+
+        window.addEventListener('click', function (event) {
+            if (!profilCard.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
+
+
+
+
