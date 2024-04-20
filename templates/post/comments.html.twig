@@ -18,25 +18,77 @@
 						<span>@{{ comment.user.username }}</span>
 					</a>
 					<span>{{ comment.createdAt|date('d M, Y') }}</span>
-					<div class="css-dropdown">
-						<button class="dropdown-button">•••</button>
-						<div class="dropdown-content">
-							{% if app.user and app.user.id == comment.user.id %}
+					{% if app.user and app.user.id == comment.user.id %}
+						<div class="css-dropdown">
+							<button class="dropdown-button">•••</button>
+							<div class="dropdown-content">
 								<a href="{{ path('app_comment_edit', {'id': comment.id}) }}?returnUrl={{ app.request.uri|url_encode }}">
 									<i class="fa-solid fa-pen"></i>
 									Modifier
 								</a>
-								{{ include('comment/_delete_form.html.twig') }}
-							{% endif %}
-							<!-- Report comment -->
-							<button type="button" data-bs-toggle="modal" data-bs-target="#reportModalComment-{{ comment.id }}">
-								<i class="fa-solid fa-flag"></i>
-								Report</button>
+								{% if (app.user and app.user.id == comment.user.id) or app.user == post.user %}
+									{{ include('comment/_delete_form.html.twig') }}
+								{% endif %}
+							</div>
 						</div>
-					</div>
+					{% endif %}
 					<p>{{ comment.body }}</p>
 				</div>
 			</div>
 		</div>
+		<!-- Modify Comment Modal -->
+		<div class="modal fade" id="modifyCommentModal-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="modifyCommentModal-{{ post.id }}" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modifyCommentModal-{{ post.id }}">Répondre à @{{ post.user.username }}</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="tweet-wrap" style="margin: 0; padding-bottom: 0;">
+						<div
+							class="tweet-header">
+							<!-- If user has a image, display it -->
+							{% if post.user.image %}
+								<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
+							{% else %}
+								<img src="asset('uploads/images/default.png" alt="" class="avator">
+							{% endif %}
+
+							<div class="tweet-header-info">
+								{% if post.user.lastname != null and post.user.firstname != null %}
+									{{ post.user.firstname }}
+									{{ post.user.lastname }}
+								{% else %}
+									{{ post.user.username }}
+								{% endif %}
+								<span>@{{ post.user.username }}</span>
+								<span>
+									{{ post.createdAt|date('d M, Y') }}
+								</span>
+								<h5>{{ post.title }}</h5>
+								<p>{{ post.body }}</p>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="modal-body">
+						{{ render(controller('App\\Controller\\CommentController::edit', {'comment': comment.id})) }}
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			// Get the modal
+var modifyCommentModal = document.getElementById('modifyCommentModal- {{ comment.id }}');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+if (event.target == modifyCommentModal) {
+modifyCommentModal.style.display = "none";
+}
+}
+		</script>
 	{% endfor %}
 </div>

@@ -147,7 +147,7 @@ class PostController extends AbstractController
             'numberOfLikes' => $numberOfLikes,
             'numberOfSuperlikes' => $numberOfSuperlikes,
             'numberOfComments' => $numberOfComments,
-            'comments' => $comments
+            'comments' => $comments,
         ]);
     }
 

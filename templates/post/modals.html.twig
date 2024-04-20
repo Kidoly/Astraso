@@ -145,6 +145,9 @@
     document.addEventListener('DOMContentLoaded', function() {
 		document.querySelector('.posts').addEventListener('click', function(e) {
 			// Checking if the clicked element or its parent has a class 'tweet-wrap'
+			if (e.target.matches('.btn, .btn *, .dropdown-button, .dropdown-button *, .dropdown-content, .dropdown-content *, a, a *')) {
+                return;
+            }
 			let target = e.target.closest('.tweet-wrap');
 			if (target) {
 				let postId = target.dataset.postId;

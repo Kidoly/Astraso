@@ -4,8 +4,8 @@
 	<div class="container mt-4">
 		<div class="row justify-content-center">
 			<div class="posts" style="background-color: #ffffff; padding: 5%;">
-				{% include 'post/show.html.twig' %}
-				{% include 'post/comments.html.twig' with {'comments': comments} %}
+				{% include 'post/show.html.twig' with {'post': post} %}
+				{% include 'post/comments.html.twig' with {'comments': comments, 'post': post} %}
 				{% include 'post/modals.html.twig' %}
 			</div>
 		</div>

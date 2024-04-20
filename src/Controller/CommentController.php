@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
@@ -65,12 +66,14 @@ class CommentController extends AbstractController
         return $this->render('comment/edit.html.twig', [
             'comment' => $comment,
             'form' => $form,
+            'post' => $comment->getPost()
         ]);
     }
 
     #[Route('/{id}/delete', name: 'app_comment_delete', methods: ['POST'])]
     public function delete(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response
     {
+        $post = $comment->getPost();
         // Retrieve the last page from the session or set default redirection if none is set
         $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
         $referer = $request->headers->get('referer', $lastPage);
@@ -81,8 +84,8 @@ class CommentController extends AbstractController
             return $this->redirect($referer);
         }
 
-        // Check if the current user is the creator of the comment
-        if ($this->getUser() !== $comment->getUser()) {
+        // Check if the current user is the creator of the comment or an admin or the creator of the post
+        if ($this->getUser() !== $comment->getUser() or !$this->isGranted('ROLE_ADMIN') or $this->getUser() !== $post->getUser()) {
             $this->addFlash('error', 'Tu n\'es pas autorisé à supprimer cette publication.');
             return $this->redirect($referer);
         }
