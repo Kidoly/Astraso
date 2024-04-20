@@ -24,47 +24,6 @@ class CommentController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_comment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $comment = new Comment();
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $body = $comment->getBody();
-
-            preg_match_all('/#(\w+)/', $body, $matches);
-            $hashtags = array_unique($matches[1]);
-
-            foreach ($hashtags as $tagName) {
-                $hashtag = $entityManager->getRepository(Hashtag::class)->findOneBy(['name' => $tagName]);
-
-                if (!$hashtag) {
-                    $hashtag = new Hashtag();
-                    $hashtag->setName($tagName);
-                    $entityManager->persist($hashtag);
-                }
-
-                $hashtagPc = new Hashtagpc();
-                $hashtagPc->setComment($comment);
-                $hashtagPc->setHashtag($hashtag);
-                $entityManager->persist($hashtagPc);
-            }
-
-            $entityManager->persist($comment);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'New comment created successfully.');
-            $referrer = $request->headers->get('referer');
-            return $this->redirect($referrer ? $referrer : $this->generateUrl('app_home'));
-        }
-
-        return $this->render('comment/new.html.twig', [
-            'comment' => $comment,
-            'form' => $form->createView(),
-        ]);
-    }
 
     #[Route('/{id}/edit', name: 'app_comment_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response

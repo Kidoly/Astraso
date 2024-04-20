@@ -432,9 +432,8 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/{id}/comment', name: 'app_post_comment', methods: ['POST'])]
-    public function comment(Request $request, Post $post, EntityManagerInterface $entityManager, int $id): Response
+    public function comment(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
-
         // Fetch the correct Post entity based on the provided ID
         $postCommented = $entityManager->getRepository(Post::class)->find($id);
 
@@ -447,26 +446,38 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Set the commenter to the current user
             $comment->setUser($this->getUser());
-            // Correctly set the commented post
             $comment->setPost($postCommented);
             $comment->setCreatedAt(new \DateTimeImmutable());
+
+            // Extract hashtags from the comment body
+            $body = $comment->getBody();
+            preg_match_all('/#(\w+)/', $body, $matches);
+            $hashtags = array_unique($matches[1]);
+
+            foreach ($hashtags as $tagName) {
+                $hashtag = $entityManager->getRepository(Hashtag::class)->findOneBy(['name' => $tagName]);
+                if (!$hashtag) {
+                    $hashtag = new Hashtag();
+                    $hashtag->setName($tagName);
+                    $entityManager->persist($hashtag);
+                }
+
+                $hashtagPc = new Hashtagpc();
+                $hashtagPc->setComment($comment);
+                $hashtagPc->setHashtag($hashtag);
+                $entityManager->persist($hashtagPc);
+            }
 
             $entityManager->persist($comment);
             $entityManager->flush();
 
             // Get referrer URL
             $referrer = $request->headers->get('referer');
-            if (!$referrer) {
-                // Fallback if no referrer is available
-                $referrer = $this->generateUrl('homepage');
-            }
-
-            // Redirect to the referrer URL
-            return $this->redirect($referrer);
+            return $this->redirect($referrer ? $referrer : $this->generateUrl('homepage'));
         }
 
+        // If the form is not submitted or valid, render the form again
         return $this->render('comment/_form.html.twig', [
             'form' => $form->createView(),
             'post' => $postCommented
