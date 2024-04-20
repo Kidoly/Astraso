@@ -10,9 +10,11 @@ use App\Entity\Report;
 use App\Form\PostType;
 use DateTimeImmutable;
 use App\Entity\Comment;
+use App\Entity\Hashtag;
 use App\Form\ReportType;
 use App\Form\CommentType;
 use App\Entity\ImagePost;
+use App\Entity\Hashtagpc;
 use App\Repository\PostRepository;
 use App\Repository\LikeRepository;
 use App\Repository\CommentRepository;
@@ -22,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 
 
 
@@ -52,6 +55,25 @@ class PostController extends AbstractController
 
         $referer = $request->headers->get('referer');
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $body = $post->getBody();
+            preg_match_all('/#(\w+)/', $body, $matches);
+            $hashtags = array_unique($matches[1]);
+
+            foreach ($hashtags as $tagName) {
+                $hashtag = $entityManager->getRepository(Hashtag::class)->findOneBy(['name' => $tagName]);
+                if (!$hashtag) {
+                    $hashtag = new Hashtag();
+                    $hashtag->setName($tagName);
+                    $entityManager->persist($hashtag);
+                }
+
+                $hashtagPc = new Hashtagpc();
+                $hashtagPc->setPost($post);
+                $hashtagPc->setHashtag($hashtag);
+                $entityManager->persist($hashtagPc);
+            }
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $uploadedFiles */
             $uploadedFiles = $form['images']->getData();
@@ -155,10 +177,7 @@ class PostController extends AbstractController
     #[Route('/{id}/edit', name: 'app_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
-        // Retrieve the currently logged-in user
         $user = $this->getUser();
-
-        // Check if the current user is the creator of the post
         if ($user !== $post->getUser()) {
             $this->addFlash('error', 'Tu n\'es pas autorisé à modifier cette publication.');
             $referer = $request->headers->get('referer');
@@ -169,16 +188,37 @@ class PostController extends AbstractController
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        $returnUrl = $request->query->get('returnUrl', $this->generateUrl('app_home'));
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // Clear existing images
-            foreach ($post->getImagePosts() as $imagePost) {
-                $entityManager->remove($imagePost);
-                // Delete the image file from the server here
-                $entityManager->remove($imagePost->getImage());
+            // Extract hashtags from the updated body
+            $body = $post->getBody();
+            preg_match_all('/#(\w+)/', $body, $matches);
+            $newTags = array_unique($matches[1]);
+
+            // Get existing hashtags from the database linked to this post
+            $existingTags = [];
+            foreach ($post->getHashtagpcs() as $hashtagpc) {
+                $existingTags[] = $hashtagpc->getHashtag()->getName();
+                if (!in_array($hashtagpc->getHashtag()->getName(), $newTags)) {
+                    $entityManager->remove($hashtagpc); // Remove the association if tag no longer exists in body
+                }
             }
-            $entityManager->flush();  // Ensure removal is executed immediately
+
+            // Add new hashtags
+            foreach ($newTags as $tagName) {
+                if (!in_array($tagName, $existingTags)) {
+                    $hashtag = $entityManager->getRepository(Hashtag::class)->findOneBy(['name' => $tagName]);
+                    if (!$hashtag) {
+                        $hashtag = new Hashtag();
+                        $hashtag->setName($tagName);
+                        $entityManager->persist($hashtag);
+                    }
+
+                    $hashtagPc = new Hashtagpc();
+                    $hashtagPc->setPost($post);
+                    $hashtagPc->setHashtag($hashtag);
+                    $entityManager->persist($hashtagPc);
+                }
+            }
 
             // Process new images
             /** @var UploadedFile[] $uploadedFiles */
@@ -214,7 +254,7 @@ class PostController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Le post a été modifié avec succès.');
-            return $this->redirect($returnUrl);
+            return $this->redirect($request->query->get('returnUrl', $this->generateUrl('app_home')));
         }
 
         return $this->render('post/edit.html.twig', [
