@@ -49,6 +49,7 @@ class InstitutionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $institution->setAccepted(false);
             $entityManager->persist($institution);
             $entityManager->flush();
 

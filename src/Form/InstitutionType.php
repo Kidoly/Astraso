@@ -15,7 +15,6 @@ class InstitutionType extends AbstractType
             ->add('name')
             ->add('postal_code')
             ->add('address')
-            ->add('accepted')
         ;
     }
 

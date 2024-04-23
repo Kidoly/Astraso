@@ -53,8 +53,6 @@ class PostController extends AbstractController
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        $referer = $request->headers->get('referer');
-
         if ($form->isSubmitted() && $form->isValid()) {
             $body = $post->getBody();
             preg_match_all('/#(\w+)/', $body, $matches);
@@ -109,6 +107,7 @@ class PostController extends AbstractController
 
             $entityManager->persist($post);
             $entityManager->flush();
+            $referer = $request->headers->get('referer');
 
             return $this->redirect($referer);
         }
