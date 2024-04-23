@@ -45,4 +45,14 @@ class HashtagRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    public function findByQuery(string $query)
+    {
+        return $this->createQueryBuilder('h')
+            ->andWhere('h.name LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+    }
 }

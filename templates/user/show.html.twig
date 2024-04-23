@@ -17,7 +17,7 @@
 
 					<div class="card-body">
 						{% if user.image %}
-							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
+							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover; margin: 5%;">
 						{% else %}
 							<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover;">
 						{% endif %}
@@ -29,19 +29,19 @@
 									<td>{{ user.username }}</td>
 								</tr>
 								<tr>
-									<th scope="row">First Name</th>
+									<th scope="row">Prénom</th>
 									<td>{{ user.firstName }}</td>
 								</tr>
 								<tr>
-									<th scope="row">Last Name</th>
+									<th scope="row">Nom</th>
 									<td>{{ user.lastName }}</td>
 								</tr>
 								<tr>
-									<th scope="row">Biography</th>
+									<th scope="row">Bio</th>
 									<td>{{ user.biography }}</td>
 								</tr>
 								<tr>
-									<th scope="row">Joined</th>
+									<th scope="row">Membre depuis</th>
 									<td>{{ user.createdAt ? user.createdAt|date('M d, Y') : '' }}</td>
 								</tr>
 								<tr>
@@ -50,7 +50,7 @@
 								</tr>
                                 {% if user.institution %}
                                     <tr>
-                                        <th scope="row">Institution</th>
+                                        <th scope="row">Établissements</th>
                                         <td>{{ user.institution.name }}</td>
                                     </tr>
                                 {% endif %}
