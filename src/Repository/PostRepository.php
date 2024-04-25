@@ -54,4 +54,15 @@ class PostRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countPostsBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('count(p.id)')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

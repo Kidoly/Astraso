@@ -71,4 +71,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult();
     }
+
+    public function countUsersBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.createdAt BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
