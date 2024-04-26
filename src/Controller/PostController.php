@@ -82,15 +82,15 @@ class PostController extends AbstractController
                     $safeFilename = preg_replace('/[^a-zA-Z0-9]+/', '_', $originalFilename);
                     $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
 
-                    try {
-                        $uploadedFile->move(
-                            $this->getParameter('images_directory'),
-                            $newFilename
-                        );
-                    } catch (\Exception $e) {
+                    //try {
+                    $uploadedFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                    /* } catch (\Exception $e) {
                         $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                         continue;
-                    }
+                    }*/
 
                     $image = new Image();
                     $image->setImage($newFilename);

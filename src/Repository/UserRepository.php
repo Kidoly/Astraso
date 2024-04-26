@@ -72,14 +72,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function countUsersBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
+    public function countCreationsBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
     {
-        return $this->createQueryBuilder('u')
-            ->select('count(u.id)')
-            ->where('u.createdAt BETWEEN :start AND :end')
-            ->setParameter('start', $startDate)
-            ->setParameter('end', $endDate)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('COUNT(u.id)')
+            ->where('u.createdAt >= :start AND u.createdAt <= :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE);
+
+        $query = $qb->getQuery();
+
+        return (int) $query->getSingleScalarResult();
     }
 }
