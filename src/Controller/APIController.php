@@ -23,7 +23,7 @@ use App\Entity\Post;
 class APIController extends AbstractController
 {
     #[Route('/GetNombreCreationsCompte', name: 'app_api_get_nombre_creations_compte', methods: ['POST'])]
-    #[OA\Tag(name: 'Stat_Compte')]
+    #[OA\Tag(name: 'General')]
     #[OA\Response(
         response: 200,
         description: 'Successful response',
@@ -53,7 +53,7 @@ class APIController extends AbstractController
     }
 
     #[Route('/GetNombrePost', name: 'app_api_get_nombre_post', methods: ['POST'])]
-    #[OA\Tag(name: 'Stat_Post')]
+    #[OA\Tag(name: 'General')]
     #[OA\Response(
         response: 200,
         description: 'Successful response',
@@ -80,6 +80,68 @@ class APIController extends AbstractController
             );
 
         return $this->json($nombrePost);
+    }
+
+    //Nombre moyen de commentaire par post
+    #[Route('/GetNombreMoyenCommentaireParPost', name: 'app_api_get_nombre_moyen_commentaire_par_post', methods: ['POST'])]
+    #[OA\Tag(name: 'General')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'integer'
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetNombreMoyenCommentaireParPost(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $nombreMoyenCommentaireParPost = $entityManager->getRepository(Post::class)
+            ->countAverageCommentsPerPost(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($nombreMoyenCommentaireParPost);
+    }
+
+
+    #[Route('/GetNombreMoyenLikeParPost', name: 'app_api_get_nombre_moyen_like_par_post', methods: ['POST'])]
+    #[OA\Tag(name: 'General')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'integer'
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetNombreMoyenLikeParPost(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $nombreMoyenLikeParPost = $entityManager->getRepository(Post::class)
+            ->countAverageLikesPerPost(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($nombreMoyenLikeParPost);
     }
 
     /*#[Route('/RetourneUnePeriodeAleatoire', name:'app_api_periode', methods: ['GET'])]

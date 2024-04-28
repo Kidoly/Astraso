@@ -65,4 +65,40 @@ class PostRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function countAverageCommentsPerPost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): float
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('COUNT(c.id) as commentCount')
+            ->leftJoin('p.comments', 'c')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('p.id');
+
+        $results = $qb->getQuery()->getScalarResult();
+
+        $totalComments = array_sum(array_column($results, 'commentCount'));
+        $numberOfPosts = count($results);
+
+        return $numberOfPosts > 0 ? $totalComments / $numberOfPosts : 0.0;
+    }
+
+    public function countAverageLikesPerPost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): float
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('COUNT(l.id) as likeCount')
+            ->leftJoin('p.likes', 'l')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('p.id');
+
+        $results = $qb->getQuery()->getScalarResult();
+
+        $totalLikes = array_sum(array_column($results, 'likeCount'));
+        $numberOfPosts = count($results);
+
+        return $numberOfPosts > 0 ? $totalLikes / $numberOfPosts : 0.0;
+    }
 }
