@@ -45,7 +45,6 @@ class APIController extends AbstractController
 
         $nombreCreations = $entityManager->getRepository(User::class)
             ->countCreationsBetweenDates(
-                new DateTimeImmutable($periodeDTO->dateDebut->format('Y-m-d H:i:s')),
                 DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
                 DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
             );
@@ -75,8 +74,7 @@ class APIController extends AbstractController
         $periodeDTO->dateFin = new \DateTime($data['dateFin']);
 
         $nombrePost = $entityManager->getRepository(Post::class)
-            ->countCreationsBetweenDates(
-                new DateTimeImmutable($periodeDTO->dateDebut->format('Y-m-d H:i:s')),
+            ->countPostsBetweenDates(
                 DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
                 DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
             );

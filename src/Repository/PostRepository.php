@@ -55,8 +55,7 @@ class PostRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    //countPostsBetweenDates
-    public function countPostsBetweenDates(\DateTime $startDate, \DateTime $endDate)
+    public function countPostsBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate)
     {
         return $this->createQueryBuilder('p')
             ->select('COUNT(p.id)')
