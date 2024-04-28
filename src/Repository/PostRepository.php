@@ -101,4 +101,22 @@ class PostRepository extends ServiceEntityRepository
 
         return $numberOfPosts > 0 ? $totalLikes / $numberOfPosts : 0.0;
     }
+
+    //getMostCommentedPosts (5 posts les plus commentés sur une période donnée)
+    public function getMostCommentedPosts(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id, p.title, p.body, p.created_at, u.username, COUNT(c.id) as commentCount, COUNT(l.id) as likeCount, SUM(CASE WHEN l.superlike = true THEN 1 ELSE 0 END) as superlikeCount')
+            ->leftJoin('p.comments', 'c')
+            ->leftJoin('p.likes', 'l')
+            ->leftJoin('p.user', 'u')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('p.id')
+            ->orderBy('commentCount', 'DESC')
+            ->setMaxResults(5);
+
+        return $qb->getQuery()->getResult();
+    }
 }

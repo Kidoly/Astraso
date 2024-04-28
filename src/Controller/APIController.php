@@ -82,7 +82,6 @@ class APIController extends AbstractController
         return $this->json($nombrePost);
     }
 
-    //Nombre moyen de commentaire par post
     #[Route('/GetNombreMoyenCommentaireParPost', name: 'app_api_get_nombre_moyen_commentaire_par_post', methods: ['POST'])]
     #[OA\Tag(name: 'General')]
     #[OA\Response(
@@ -113,7 +112,6 @@ class APIController extends AbstractController
         return $this->json($nombreMoyenCommentaireParPost);
     }
 
-
     #[Route('/GetNombreMoyenLikeParPost', name: 'app_api_get_nombre_moyen_like_par_post', methods: ['POST'])]
     #[OA\Tag(name: 'General')]
     #[OA\Response(
@@ -143,6 +141,53 @@ class APIController extends AbstractController
 
         return $this->json($nombreMoyenLikeParPost);
     }
+
+    //getMostCommentedPosts (5 posts les plus commentés sur une période donnée)
+    #[Route('/GetPostsLesPlusCommentes', name: 'app_api_get_posts_les_plus_commentes', methods: ['POST'])]
+    #[OA\Tag(name: 'LesPlusCommentes')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer'),
+                    new OA\Property(property: 'title', type: 'string'),
+                    new OA\Property(property: 'body', type: 'string'),
+                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+                    new OA\Property(property: 'username', type: 'string'),
+                    new OA\Property(property: 'commentCount', type: 'integer'),
+                    new OA\Property(property: 'likeCount', type: 'integer'),
+                    new OA\Property(property: 'superLikeCount', type: 'integer')
+                ]
+            )
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetPostsLesPlusCommentes(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $postsLesPlusCommentes = $entityManager->getRepository(Post::class)
+            ->getMostCommentedPosts(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($postsLesPlusCommentes);
+    }
+
+
+
 
     /*#[Route('/RetourneUnePeriodeAleatoire', name:'app_api_periode', methods: ['GET'])]
     #[OA\Response(
