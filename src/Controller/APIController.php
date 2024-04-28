@@ -186,7 +186,49 @@ class APIController extends AbstractController
         return $this->json($postsLesPlusCommentes);
     }
 
+    //getMostLikedPosts (5 posts les plus likés sur une période donnée)
+    #[Route('/GetPostsLesPlusLikes', name: 'app_api_get_posts_les_plus_likes', methods: ['POST'])]
+    #[OA\Tag(name: 'LesPlusLikes')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer'),
+                    new OA\Property(property: 'title', type: 'string'),
+                    new OA\Property(property: 'body', type: 'string'),
+                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+                    new OA\Property(property: 'username', type: 'string'),
+                    new OA\Property(property: 'commentCount', type: 'integer'),
+                    new OA\Property(property: 'likeCount', type: 'integer'),
+                    new OA\Property(property: 'superLikeCount', type: 'integer')
+                ]
+            )
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetPostsLesPlusLikes(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $postsLesPlusLikes = $entityManager->getRepository(Post::class)
+            ->getMostLikedPosts(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($postsLesPlusLikes);
+    }
 
 
     /*#[Route('/RetourneUnePeriodeAleatoire', name:'app_api_periode', methods: ['GET'])]

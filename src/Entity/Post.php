@@ -54,7 +54,7 @@ class Post
         $this->reports = new ArrayCollection();
         $this->hashtagpcs = new ArrayCollection();
         $this->imagePosts = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->created_at = new \DateTimeImmutable();
     }
 
 

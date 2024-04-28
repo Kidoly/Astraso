@@ -106,15 +106,52 @@ class PostRepository extends ServiceEntityRepository
     public function getMostCommentedPosts(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
     {
         $qb = $this->createQueryBuilder('p');
-        $qb->select('p.id, p.title, p.body, p.created_at, u.username, COUNT(c.id) as commentCount, COUNT(l.id) as likeCount, SUM(CASE WHEN l.superlike = true THEN 1 ELSE 0 END) as superlikeCount')
+        $qb->select(
+            '
+        p.id,
+        p.title,
+        p.body,
+        p.created_at,
+        u.username,
+        COUNT(DISTINCT c.id) as commentCount,
+        (SELECT COUNT(l1.id) FROM App\Entity\Like l1 WHERE l1.post = p AND l1.superlike = false) as likeCount,
+        (SELECT COUNT(l2.id) FROM App\Entity\Like l2 WHERE l2.post = p AND l2.superlike = true) as superlikeCount'
+        )
             ->leftJoin('p.comments', 'c')
-            ->leftJoin('p.likes', 'l')
             ->leftJoin('p.user', 'u')
             ->where('p.created_at BETWEEN :start AND :end')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
-            ->groupBy('p.id')
+            ->groupBy('p.id, p.title, p.body, p.created_at, u.username')
             ->orderBy('commentCount', 'DESC')
+            ->setMaxResults(5);
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+    //getMostLikedPosts (5 posts les plus likés sur une période donnée)
+    public function getMostLikedPosts(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select(
+            '
+        p.id,
+        p.title,
+        p.body,
+        p.created_at,
+        u.username,
+        COUNT(DISTINCT c.id) as commentCount,
+        (SELECT COUNT(l1.id) FROM App\Entity\Like l1 WHERE l1.post = p AND l1.superlike = false) as likeCount,
+        (SELECT COUNT(l2.id) FROM App\Entity\Like l2 WHERE l2.post = p AND l2.superlike = true) as superlikeCount'
+        )
+            ->leftJoin('p.comments', 'c')
+            ->leftJoin('p.user', 'u')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('p.id, p.title, p.body, p.created_at, u.username')
+            ->orderBy('likeCount', 'DESC')
             ->setMaxResults(5);
 
         return $qb->getQuery()->getResult();
