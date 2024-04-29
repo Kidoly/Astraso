@@ -84,4 +84,40 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return (int) $query->getSingleScalarResult();
     }
+
+    //getUsersCommentingTheMost (5 utilisateurs ayant commenté le plus sur une période donnée)
+    public function getUsersCommentingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.username, COUNT(c.id) as commentCount')
+            ->leftJoin('u.comment', 'c')
+            ->where('c.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->groupBy('u.id')
+            ->orderBy('commentCount', 'DESC')
+            ->setMaxResults(5);
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
+
+    //getUsersPostingTheMost (5 utilisateurs ayant posté le plus sur une période donnée)
+    public function getUsersPostingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.username, COUNT(p.id) as postCount')
+            ->leftJoin('u.posts', 'p')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->groupBy('u.id')
+            ->orderBy('postCount', 'DESC')
+            ->setMaxResults(5);
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
 }

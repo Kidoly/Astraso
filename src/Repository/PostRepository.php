@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Post;
+use App\Entity\Like;
+use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query;
 
 /**
  * @extends ServiceEntityRepository<Post>
@@ -184,5 +187,4 @@ class PostRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    
 }

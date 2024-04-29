@@ -22,7 +22,7 @@ use App\Entity\Post;
 #[Route('/api')]
 class APIController extends AbstractController
 {
-    #[Route('/GetNombreCreationsCompte', name: 'app_api_get_nombre_creations_compte', methods: ['POST'])]
+    #[Route('/GetNombreCreationsComptes', name: 'app_api_get_nombre_creations_comptes', methods: ['POST'])]
     #[OA\Tag(name: 'General')]
     #[OA\Response(
         response: 200,
@@ -35,7 +35,7 @@ class APIController extends AbstractController
         required: true,
         content: new Model(type: Periode_DTO::class)
     )]
-    public function GetNombreCreationsCompte(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function GetNombreCreationsComptes(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -52,7 +52,7 @@ class APIController extends AbstractController
         return $this->json($nombreCreations);
     }
 
-    #[Route('/GetNombrePost', name: 'app_api_get_nombre_post', methods: ['POST'])]
+    #[Route('/GetNombrePostz', name: 'app_api_get_nombre_posts', methods: ['POST'])]
     #[OA\Tag(name: 'General')]
     #[OA\Response(
         response: 200,
@@ -65,7 +65,7 @@ class APIController extends AbstractController
         required: true,
         content: new Model(type: Periode_DTO::class)
     )]
-    public function GetNombrePost(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function GetNombrePosts(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -273,6 +273,87 @@ class APIController extends AbstractController
 
         return $this->json($postsLesPlusSuperLikes);
     }
+
+    /*
+    // getUsersCommentingTheMost
+    #[Route('/GetUtilisateursCommentantLePlus', name: 'app_api_get_utilisateurs_commentant_le_plus', methods: ['POST'])]
+    #[OA\Tag(name: 'UtilisateursCommentantLePlus')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer'),
+                    new OA\Property(property: 'username', type: 'string'),
+                    new OA\Property(property: 'commentCount', type: 'integer')
+                ]
+            )
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetUtilisateursCommentantLePlus(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $utilisateursCommentantLePlus = $entityManager->getRepository(User::class)
+            ->getUsersCommentingTheMost(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($utilisateursCommentantLePlus);
+    }
+
+    //getUsersPostingTheMost
+    #[Route('/GetUtilisateursPostantLePlus', name: 'app_api_get_utilisateurs_postant_le_plus', methods: ['POST'])]
+    #[OA\Tag(name: 'UtilisateursPostantLePlus')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer'),
+                    new OA\Property(property: 'username', type: 'string'),
+                    new OA\Property(property: 'postCount', type: 'integer')
+                ]
+            )
+        )
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new Model(type: Periode_DTO::class)
+    )]
+    public function GetUtilisateursPostantLePlus(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $periodeDTO = new Periode_DTO();
+        $periodeDTO->dateDebut = new \DateTime($data['dateDebut']);
+        $periodeDTO->dateFin = new \DateTime($data['dateFin']);
+
+        $utilisateursPostantLePlus = $entityManager->getRepository(User::class)
+            ->getUsersPostingTheMost(
+                DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
+                DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
+            );
+
+        return $this->json($utilisateursPostantLePlus);
+    }
+    */
+
 
     /*#[Route('/RetourneUnePeriodeAleatoire', name:'app_api_periode', methods: ['GET'])]
     #[OA\Response(
