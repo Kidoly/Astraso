@@ -25,11 +25,11 @@
 					{% if users is not empty %}
 						<ul>
 							{% for user in users %}
-								<li>{{ user.username }}
-									-
-									{{ user.firstname }}
-									{{ user.lastname }}
-								</li>
+								<a href="/{{ user.id }}" type="button" style="border-radius:0;" class="btn btn-primary">
+									{{user.firstName}}
+									{{user.lastName}}
+									<span>@{{ user.username }}</span>
+								</a><br>
 							{% endfor %}
 						</ul>
 					{% else %}

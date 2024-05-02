@@ -218,9 +218,20 @@ class PostController extends AbstractController
                 }
             }
 
-            // Process new images
+            // Handling Images
             /** @var UploadedFile[] $uploadedFiles */
             $uploadedFiles = $form['images']->getData();
+
+            // Get existing images
+            $existingImages = $post->getImagePosts();
+
+            // Remove existing images that are not part of the new upload
+            foreach ($existingImages as $existingImage) {
+                $entityManager->remove($existingImage->getImage());
+                $entityManager->remove($existingImage);
+            }
+
+            // Add new images
             foreach ($uploadedFiles as $uploadedFile) {
                 if ($uploadedFile) {
                     $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -245,7 +256,7 @@ class PostController extends AbstractController
                     $imagePost->setPost($post);
 
                     $entityManager->persist($image);
-                    $entityManager->persist($imagePost);
+                    $entityManager->persist($imagePost); // Persist the ImagePost entity
                 }
             }
 

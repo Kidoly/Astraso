@@ -93,10 +93,11 @@ class CommentController extends AbstractController
         }
 
         // Check if the current user is the creator of the comment or an admin or the creator of the post
-        if ($this->getUser() !== $comment->getUser() or !$this->isGranted('ROLE_ADMIN') or $this->getUser() !== $post->getUser()) {
+        if (!($this->getUser() === $comment->getUser() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $post->getUser())) {
             $this->addFlash('error', 'Tu n\'es pas autorisé à supprimer cette publication.');
             return $this->redirect($referer);
         }
+
 
         // Proceed with deletion
         $entityManager->remove($comment);

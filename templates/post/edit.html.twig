@@ -1,27 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Post{% endblock %}
+{% block title %}Edit Post
+{% endblock %}
 {% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/post.css') }}">
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('styles/post.css') }}">
 {% endblock %}
 
 {% block body %}
 
-{% block navbar %}
-    {{parent()}}
-{% endblock %}
-{% block content %}
+	{% block navbar %}
+		{{parent()}}
+	{% endblock %}
+	{% block content %}
 
 
-    <h1>Edit Post</h1>
+		<h1>Modifier le Post</h1>
 
-    {{ include('post/_form.html.twig', {'button_label': 'Update'}) }}
+		{{ include('post/_form.html.twig', {'button_label': 'Modifier'}) }}
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
+		{{ include('post/_delete_form.html.twig') }}
+	{% endblock %}
 
-    {{ include('post/_delete_form.html.twig') }}
-{% endblock %}
-
-    {% block footer %}{% endblock %}
+	{% block footer %}{% endblock %}
 {% endblock %}
