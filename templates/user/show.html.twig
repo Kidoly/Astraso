@@ -5,15 +5,15 @@
 
 {% block body %}
 
-{% block navbar %}
-        {{ parent() }}
-{% endblock %}
+	{% block navbar %}
+		{{ parent() }}
+	{% endblock %}
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div>
-            <div class="card">
-                <div class="card-header">User Profile</div>
+	<div class="container mt-4">
+		<div class="row justify-content-center">
+			<div>
+				<div class="card">
+					<div class="card-header">User Profile</div>
 
 					<div class="card-body">
 						{% if user.image %}
@@ -48,12 +48,12 @@
 									<th scope="row">Email</th>
 									<td>{{ user.email }}</td>
 								</tr>
-                                {% if user.institution %}
-                                    <tr>
-                                        <th scope="row">Établissements</th>
-                                        <td>{{ user.institution.name }}</td>
-                                    </tr>
-                                {% endif %}
+								{% if user.institution %}
+									<tr>
+										<th scope="row">Établissements</th>
+										<td>{{ user.institution.name }}</td>
+									</tr>
+								{% endif %}
 
 							</tbody>
 						</table>
@@ -95,6 +95,14 @@
 						{% endif %}
 						<!-- Report l'utilisateur -->
 						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+						<!-- Supprimer l'utilisateur -->
+						{% if app.user.id == user.id or app.user.roles[0] == 'ROLE_ADMIN' %}
+							<form action="{{ path('app_user_delete', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+								<button type="submit" class="btn btn-danger">Supprimer</button>
+							</form>
+						{% endif %}
+
 					</div>
 
 					<div
@@ -150,70 +158,68 @@
 
 		<script>
 			$(document).ready(function () { // Trigger modal open
-				$('.btn[data-target="#reportModal"]').click(function () {
-					$('#reportModal').modal('show');
-				});
+$('.btn[data-target="#reportModal"]').click(function () {
+$('#reportModal').modal('show');
+});
 
-				$('.close').on('click', function () {
-					$('#reportModal').modal('hide');
-				});
-			});
+$('.close').on('click', function () {
+$('#reportModal').modal('hide');
+});
+});
 		</script>
-		
+
 
 	{% endblock %}
 	{% block javascripts %}
-	{{ parent() }}
-	<script>
-	$(document).ready(function() {
-		// Function to parse query parameters from the URL
-		function getQueryParam(param) {
-			var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
-			return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
-		}
+		{{ parent() }}
+		<script>
+			$(document).ready(function () { // Function to parse query parameters from the URL
+function getQueryParam(param) {
+var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
+return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
+}
 
-		// Function to remove a specific query parameter
-		function removeQueryParam(parameter) {
-			var url = document.location.href;
-			var urlparts = url.split('?');
-			
-			if (urlparts.length >= 2) {
-				var prefix = encodeURIComponent(parameter) + '=';
-				var pars = urlparts[1].split(/[&;]/g);
+// Function to remove a specific query parameter
+function removeQueryParam(parameter) {
+var url = document.location.href;
+var urlparts = url.split('?');
 
-				// Loop through query strings, exclude target query param
-				for (var i = pars.length; i-- > 0;) {
-					if (pars[i].lastIndexOf(prefix, 0) !== -1) {
-						pars.splice(i, 1);
-					}
-				}
+if (urlparts.length >= 2) {
+var prefix = encodeURIComponent(parameter) + '=';
+var pars = urlparts[1].split(/[&;]/g);
 
-				// Rejoin the URL without the target parameter
-				url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
-				history.replaceState(null, document.title, url); // Replace the state in the history
-			}
-		}
+// Loop through query strings, exclude target query param
+for (var i = pars.length; i-- > 0;) {
+if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+pars.splice(i, 1);
+}
+}
 
-		// Check for 'success' query parameter and show modal if present
-		var success = getQueryParam('success');
-		if (success) {
-			$('#successModal').modal('show');
-			removeQueryParam('success');  // Remove 'success' from URL
-		}
+// Rejoin the URL without the target parameter
+url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
+history.replaceState(null, document.title, url); // Replace the state in the history
+}
+}
 
-		// Setup triggers for modals
-		$('.btn[data-target="#reportModal"]').click(function() {
-			$('#reportModal').modal('show');
-		});
+// Check for 'success' query parameter and show modal if present
+var success = getQueryParam('success');
+if (success) {
+$('#successModal').modal('show');
+removeQueryParam('success'); // Remove 'success' from URL
+}
 
-		$('.close').on('click', function() {
-			$('#reportModal').modal('hide');
-			$('#successModal').modal('hide');
-		});
-	});
-	</script>
+// Setup triggers for modals
+$('.btn[data-target="#reportModal"]').click(function () {
+$('#reportModal').modal('show');
+});
+
+$('.close').on('click', function () {
+$('#reportModal').modal('hide');
+$('#successModal').modal('hide');
+});
+});
+		</script>
 	{% endblock %}
 	{% block footer %}
-        {% include 'home/_trends.html.twig' %}
-    {% endblock %}
-
+		{% include 'home/_trends.html.twig' %}
+	{% endblock %}

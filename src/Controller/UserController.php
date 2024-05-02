@@ -155,16 +155,55 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{id}', name: 'app_user_delete', methods: ['DELETE'])]
+    #[Route('/user/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($user);
-            $entityManager->flush();
+        if (!$user) {
+            $this->addFlash('error', 'User not found.');
+            return $this->redirectToRoute('app_user_index');
         }
 
-        return $this->redirectToRoute('app_user_index');
+        if (!$this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirectToRoute('app_user_index');
+        }
+
+        try {
+            $entityManager->beginTransaction();
+
+            // Manually remove relationships if not handled by cascade
+            foreach ($user->getPosts() as $post) {
+                $entityManager->remove($post);
+            }
+            foreach ($user->getReports() as $report) {
+                $entityManager->remove($report);
+            }
+            foreach ($user->getFollows() as $follow) {
+                $entityManager->remove($follow);
+            }
+            foreach ($user->getComments() as $comment) {
+                $entityManager->remove($comment);
+            }
+            foreach ($user->getLikes() as $like) {
+                $entityManager->remove($like);
+            }
+
+            $entityManager->remove($user);
+            $entityManager->flush();
+            $entityManager->commit();
+
+            $this->addFlash('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            $entityManager->rollback();
+            $this->addFlash('error', 'Failed to delete user due to a database error.');
+            dump($e->getMessage());
+            die();
+        }
+
+
+        return $this->redirectToRoute('app_login');
     }
+
 
     #[Route('/user/{id}/follow', name: 'app_user_follow', methods: ['GET'])]
     public function follow(User $user, EntityManagerInterface $entityManager, FollowRepository $followRepository): Response

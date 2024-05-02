@@ -52,7 +52,7 @@ class APIController extends AbstractController
         return $this->json($nombreCreations);
     }
 
-    #[Route('/GetNombrePostz', name: 'app_api_get_nombre_posts', methods: ['POST'])]
+    #[Route('/GetNombrePosts', name: 'app_api_get_nombre_posts', methods: ['POST'])]
     #[OA\Tag(name: 'General')]
     #[OA\Response(
         response: 200,
@@ -156,11 +156,11 @@ class APIController extends AbstractController
                     new OA\Property(property: 'id', type: 'integer'),
                     new OA\Property(property: 'title', type: 'string'),
                     new OA\Property(property: 'body', type: 'string'),
-                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
                     new OA\Property(property: 'username', type: 'string'),
                     new OA\Property(property: 'commentCount', type: 'integer'),
                     new OA\Property(property: 'likeCount', type: 'integer'),
-                    new OA\Property(property: 'superLikeCount', type: 'integer')
+                    new OA\Property(property: 'superLikeCount', type: 'integer'),
+                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time')
                 ]
             )
         )
@@ -200,11 +200,11 @@ class APIController extends AbstractController
                     new OA\Property(property: 'id', type: 'integer'),
                     new OA\Property(property: 'title', type: 'string'),
                     new OA\Property(property: 'body', type: 'string'),
-                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
                     new OA\Property(property: 'username', type: 'string'),
                     new OA\Property(property: 'commentCount', type: 'integer'),
                     new OA\Property(property: 'likeCount', type: 'integer'),
-                    new OA\Property(property: 'superLikeCount', type: 'integer')
+                    new OA\Property(property: 'superLikeCount', type: 'integer'),
+                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time')
                 ]
             )
         )
@@ -244,11 +244,11 @@ class APIController extends AbstractController
                     new OA\Property(property: 'id', type: 'integer'),
                     new OA\Property(property: 'title', type: 'string'),
                     new OA\Property(property: 'body', type: 'string'),
-                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
                     new OA\Property(property: 'username', type: 'string'),
                     new OA\Property(property: 'commentCount', type: 'integer'),
                     new OA\Property(property: 'likeCount', type: 'integer'),
-                    new OA\Property(property: 'superLikeCount', type: 'integer')
+                    new OA\Property(property: 'superLikeCount', type: 'integer'),
+                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time')
                 ]
             )
         )

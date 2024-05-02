@@ -107,9 +107,8 @@ class PostController extends AbstractController
 
             $entityManager->persist($post);
             $entityManager->flush();
-            $referer = $request->headers->get('referer');
 
-            return $this->redirect($referer);
+            return $this->redirect($request->query->get('returnUrl', $this->generateUrl('app_home')));
         }
 
         return $this->render('post/new.html.twig', [

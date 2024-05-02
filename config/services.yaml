@@ -19,6 +19,11 @@ services:
       - "../src/DependencyInjection/"
       - "../src/Entity/"
       - "../src/Kernel.php"
+  App\Service\TrendService:
+    arguments:
+      $hashtagpcRepository: '@App\Repository\HashtagpcRepository'
+  app.service.trend_service:
+    alias: App\Service\TrendService
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
