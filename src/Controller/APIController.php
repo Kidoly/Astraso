@@ -88,7 +88,7 @@ class APIController extends AbstractController
         response: 200,
         description: 'Successful response',
         content: new OA\JsonContent(
-            type: 'integer'
+            type: 'number'
         )
     )]
     #[OA\RequestBody(
@@ -118,7 +118,7 @@ class APIController extends AbstractController
         response: 200,
         description: 'Successful response',
         content: new OA\JsonContent(
-            type: 'integer'
+            type: 'number'
         )
     )]
     #[OA\RequestBody(
@@ -274,7 +274,7 @@ class APIController extends AbstractController
         return $this->json($postsLesPlusSuperLikes);
     }
 
-    /*
+
     // getUsersCommentingTheMost
     #[Route('/GetUtilisateursCommentantLePlus', name: 'app_api_get_utilisateurs_commentant_le_plus', methods: ['POST'])]
     #[OA\Tag(name: 'UtilisateursCommentantLePlus')]
@@ -352,7 +352,6 @@ class APIController extends AbstractController
 
         return $this->json($utilisateursPostantLePlus);
     }
-    */
 
 
     /*#[Route('/RetourneUnePeriodeAleatoire', name:'app_api_periode', methods: ['GET'])]
