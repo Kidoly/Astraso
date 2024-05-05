@@ -23,7 +23,7 @@ class Post
     private ?string $body = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
@@ -54,7 +54,7 @@ class Post
         $this->reports = new ArrayCollection();
         $this->hashtagpcs = new ArrayCollection();
         $this->imagePosts = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->created_at = new \DateTimeImmutable();
     }
 
 

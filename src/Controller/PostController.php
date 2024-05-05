@@ -82,15 +82,15 @@ class PostController extends AbstractController
                     $safeFilename = preg_replace('/[^a-zA-Z0-9]+/', '_', $originalFilename);
                     $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
 
-                    try {
-                        $uploadedFile->move(
-                            $this->getParameter('images_directory'),
-                            $newFilename
-                        );
-                    } catch (\Exception $e) {
+                    //try {
+                    $uploadedFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                    /* } catch (\Exception $e) {
                         $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                         continue;
-                    }
+                    }*/
 
                     $image = new Image();
                     $image->setImage($newFilename);
@@ -107,9 +107,8 @@ class PostController extends AbstractController
 
             $entityManager->persist($post);
             $entityManager->flush();
-            $referer = $request->headers->get('referer');
 
-            return $this->redirect($referer);
+            return $this->redirect($request->query->get('returnUrl', $this->generateUrl('app_home')));
         }
 
         return $this->render('post/new.html.twig', [
@@ -219,9 +218,20 @@ class PostController extends AbstractController
                 }
             }
 
-            // Process new images
+            // Handling Images
             /** @var UploadedFile[] $uploadedFiles */
             $uploadedFiles = $form['images']->getData();
+
+            // Get existing images
+            $existingImages = $post->getImagePosts();
+
+            // Remove existing images that are not part of the new upload
+            foreach ($existingImages as $existingImage) {
+                $entityManager->remove($existingImage->getImage());
+                $entityManager->remove($existingImage);
+            }
+
+            // Add new images
             foreach ($uploadedFiles as $uploadedFile) {
                 if ($uploadedFile) {
                     $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -246,7 +256,7 @@ class PostController extends AbstractController
                     $imagePost->setPost($post);
 
                     $entityManager->persist($image);
-                    $entityManager->persist($imagePost);
+                    $entityManager->persist($imagePost); // Persist the ImagePost entity
                 }
             }
 

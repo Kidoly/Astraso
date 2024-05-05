@@ -7,16 +7,17 @@
 			</form>
 		</div>
 		<div class="d-flex align-items-center justify-content-center">
-			<h2 class="text-center">Trends</h2>
+			<h2 class="text-center">Tendance</h2>
 		</div>
 		<div class="d-flex align-items-center justify-content-center">
 			<ul class="list-group">
-				<li class="list-group item">Trend 1</li>
-				<li class="list-group item">Trend 2</li>
-				<li class="list-group item">Trend 3</li>
-				<li class="list-group item">Trend 4</li>
+				{% for trend in trend_service.getTrends() %}
+					<a href="/search?query=%23{{ trend.name }}" type="button" style="border-radius:0;" class="btn btn-primary">
+						#{{ trend.name }}
+						<span class="badge text-bg-secondary">{{trend.postCount}}</span>
+					</a>
+				{% endfor %}
 			</ul>
 		</div>
 	</div>
-
 {% endblock %}

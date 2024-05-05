@@ -5,7 +5,7 @@
 				{% if comment.user.image %}
 					<img src="{{ asset('uploads/images/' ~ comment.user.image.image) }}" alt="Profile picture" class="avator">
 				{% else %}
-					<img src="{{ asset('uploads/images/default.png') }}" alt="" class="avator">
+					<img src="{{ asset('uploads/images/default.jpg') }}" alt="" class="avator">
 				{% endif %}
 				<div class="tweet-header-info">
 					<a href="{{ path('app_user_show', {'id': comment.user.id}) }}">

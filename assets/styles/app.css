@@ -185,7 +185,6 @@ input[type="file"]::file-selector-button:hover {
 .css-dropdown {
   position: absolute;
   display: inline-block;
-  right: 36%;
 }
 
 .dropdown-button {
@@ -195,6 +194,7 @@ input[type="file"]::file-selector-button:hover {
   cursor: pointer;
   font-size: 16px;
   outline: none;
+  padding: 0px 10px;
 }
 
 .dropdown-button:hover,
