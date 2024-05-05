@@ -87,27 +87,35 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     //getUsersPostingTheMost (5 utilisateurs ayant posté le plus sur une période donnée)
     public function getUsersPostingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
-    {
-        $qb = $this->createQueryBuilder('u');
-        $qb->select('u.username, COUNT(p.id) as postCount')
-            ->leftJoin('u.posts', 'p')
-            ->where('p.created_at BETWEEN :start AND :end')
-            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
-            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
-            ->groupBy('u.id')
-            ->orderBy('postCount', 'DESC');
+{
+    $qb = $this->createQueryBuilder('u');
+    $qb->select('u.username, COUNT(p.id) as postCount')
+        ->leftJoin('u.posts', 'p') // Vérifiez que 'posts' est le bon nom d'association
+        ->where('p.created_at BETWEEN :start AND :end')
+        ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+        ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+        ->groupBy('u.id')
+        ->orderBy('postCount', 'DESC')
+        ->setMaxResults(5); // Limiter le nombre de résultats pour éviter les surcharges
 
-        $query = $qb->getQuery();
+    $query = $qb->getQuery();
 
+    // Ajout de la gestion des erreurs
+    try {
         return $query->getResult();
+    } catch (\Exception $e) {
+        // Gérer l'exception de manière appropriée
+        throw new \RuntimeException('Erreur lors de la récupération des utilisateurs postant le plus : ' . $e->getMessage());
     }
+}
+
 
     //getUsersCommentingTheMost (5 utilisateurs ayant commenté le plus sur une période donnée)
     public function getUsersCommentingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
     {
         $qb = $this->createQueryBuilder('u');
         $qb->select('u.username, COUNT(c.id) as commentCount')
-            ->leftJoin('u.comment', 'c')
+            ->leftJoin('u.comments', 'c')
             ->where('c.created_at BETWEEN :start AND :end')
             ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
             ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
