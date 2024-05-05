@@ -1,58 +1,5 @@
 {% extends 'base.html.twig' %}
 
-<<<<<<< HEAD
-{% block title %}Astraso
-{% endblock %}
-
-{% block stylesheets %}
-	{{ parent() }}
-	<style>
-		/* Ajoutez vos styles personnalisés ici */
-		body {
-			grid-template-columns: repeat(1, 2fr) !important;
-		}
-		.container {
-			padding: 20px;
-		}
-	</style>
-{% endblock %}
-
-{% block body %}
-	{% for flash_error in app.flashes('verify_email_error') %}
-		<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-	{% endfor %}
-
-	<h1>Inscription</h1>
-
-	<div class="container">
-		{{ form_errors(registrationForm) }}
-
-		{{ form_start(registrationForm) }}
-		{{ form_row(registrationForm.username, {
-                'attr': {'class': 'form-control mb-3'}
-            }) }}
-		{{ form_row(registrationForm.email, {
-                'attr': {'class': 'form-control mb-3'}
-            }) }}
-		{{ form_row(registrationForm.plainPassword, {
-                'label': 'Password',
-                'attr': {'class': 'form-control mb-3'}
-            }) }}
-		<div class="form-check mb-3">
-			{{ form_row(registrationForm.agreeTerms, {
-                    'label_attr': {'class': 'form-check-label'},
-                    'attr': {'class': 'form-check-input'}
-                }) }}
-		</div>
-
-		<button type="submit" class="btn btn-primary">S'inscrire</button>
-		{{ form_end(registrationForm) }}
-
-		<button type="submit" class="btn" id="register-button" style="background-color: var(--secondary-color);">
-			<a href="{{ path('app_login') }}" style="color: black;">Vous avez déjà un compte?</a>
-		</button>
-	</div>
-=======
 {% block title %}Créer un compte{% endblock %}
 
 {% block stylesheets %}
@@ -162,5 +109,4 @@
         </div>
     </div>
 </section>
->>>>>>> css-styles
 {% endblock %}
