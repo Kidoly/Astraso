@@ -77,10 +77,10 @@
 					</div>
 
 					<div
-						class="card-footer text-white d-flex">
+						class="card-footer text-white d-flex justify-content-between">
 						<!-- Affichage des boutons d'action -->
 						{% if app.user.id == user.id %}
-							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr    -2">
+							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr-2">
 								<i class="bi bi-gear-fill"></i>
 							</a>
 							<a href="{{ path('app_post_new') }}" class="btn btn-success">
@@ -94,6 +94,7 @@
 							{% endif %}
 						{% endif %}
 						<!-- Report l'utilisateur -->
+<<<<<<< HEAD
 						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
 						<!-- Supprimer l'utilisateur -->
 						{% if app.user.id == user.id or app.user.roles[0] == 'ROLE_ADMIN' %}
@@ -103,6 +104,11 @@
 							</form>
 						{% endif %}
 
+=======
+						{% if app.user.id != user.id %}
+							<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+						{% endif %}
+>>>>>>> css-styles
 					</div>
 
 					<div

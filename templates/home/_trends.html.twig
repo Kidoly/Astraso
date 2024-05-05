@@ -1,4 +1,5 @@
 {% block footer %}
+{%if app.user %}
 	<div class="trends">
 		<div class="d-flex align-items-center justify-content-center">
 			<form class="form-inline d-flex" action="{{ path('search') }}" method="GET">
@@ -20,4 +21,6 @@
 			</ul>
 		</div>
 	</div>
+{%endif%}
+
 {% endblock %}
