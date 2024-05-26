@@ -85,46 +85,61 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return (int) $query->getSingleScalarResult();
     }
 
-    //getUsersPostingTheMost (5 utilisateurs ayant posté le plus sur une période donnée)
     public function getUsersPostingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
-{
-    $qb = $this->createQueryBuilder('u');
-    $qb->select('u.username, COUNT(p.id) as postCount')
-        ->leftJoin('u.posts', 'p') // Vérifiez que 'posts' est le bon nom d'association
-        ->where('p.created_at BETWEEN :start AND :end')
-        ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
-        ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
-        ->groupBy('u.id')
-        ->orderBy('postCount', 'DESC')
-        ->setMaxResults(5); // Limiter le nombre de résultats pour éviter les surcharges
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select([
+            'u.id',
+            'u.username',
+            'COUNT(DISTINCT p.id) as postCount',
+            'COUNT(DISTINCT c.id) as commentCount',
+            '(SELECT COUNT(f1.id) FROM App\Entity\Follow f1 WHERE f1.followed_user = u) as followersCount',
+            '(SELECT COUNT(f2.id) FROM App\Entity\Follow f2 WHERE f2.following_user = u) as followingsCount'
+        ])
+            ->leftJoin('u.posts', 'p')
+            ->leftJoin('u.comments', 'c')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->groupBy('u.id')
+            ->orderBy('postCount', 'DESC')
+            ->setMaxResults(5); // Limit the results to the top 5
 
-    $query = $qb->getQuery();
-
-    // Ajout de la gestion des erreurs
-    try {
-        return $query->getResult();
-    } catch (\Exception $e) {
-        // Gérer l'exception de manière appropriée
-        throw new \RuntimeException('Erreur lors de la récupération des utilisateurs postant le plus : ' . $e->getMessage());
+        try {
+            return $qb->getQuery()->getResult();
+        } catch (\Exception $e) {
+            // Log the error or handle it as per your error handling policy
+            throw new \RuntimeException('Error retrieving users posting the most: ' . $e->getMessage());
+        }
     }
-}
 
 
-    //getUsersCommentingTheMost (5 utilisateurs ayant commenté le plus sur une période donnée)
+    //getUsersCommentingTheMost (5 utilisateurs ayant commenté le plus sur une période donnée), id, username, postCount, commentCount, followersCount, followingsCount
     public function getUsersCommentingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->select('u.username, COUNT(c.id) as commentCount')
+        $qb->select([
+            'u.id',
+            'u.username',
+            'COUNT(DISTINCT p.id) as postCount',
+            'COUNT(DISTINCT c.id) as commentCount',
+            '(SELECT COUNT(f1.id) FROM App\Entity\Follow f1 WHERE f1.followed_user = u) as followersCount',
+            '(SELECT COUNT(f2.id) FROM App\Entity\Follow f2 WHERE f2.following_user = u) as followingsCount'
+        ])
+            ->leftJoin('u.posts', 'p')
             ->leftJoin('u.comments', 'c')
-            ->where('c.created_at BETWEEN :start AND :end')
+            ->where('p.created_at BETWEEN :start AND :end')
             ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
             ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
             ->groupBy('u.id')
             ->orderBy('commentCount', 'DESC')
-            ->setMaxResults(5);
+            ->setMaxResults(5); // Limit the results to the top 5
 
-        $query = $qb->getQuery();
-
-        return $query->getResult();
+        try {
+            return $qb->getQuery()->getResult();
+        } catch (\Exception $e) {
+            // Log the error or handle it as per your error handling policy
+            throw new \RuntimeException('Error retrieving users posting the most: ' . $e->getMessage());
+        }
     }
 }
