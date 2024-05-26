@@ -288,7 +288,10 @@ class APIController extends AbstractController
                 properties: [
                     new OA\Property(property: 'id', type: 'integer'),
                     new OA\Property(property: 'username', type: 'string'),
-                    new OA\Property(property: 'commentCount', type: 'integer')
+                    new OA\Property(property: 'postCount', type: 'integer'),
+                    new OA\Property(property: 'commentCount', type: 'integer'),
+                    new OA\Property(property: 'followersCount', type: 'integer'),
+                    new OA\Property(property: 'followingsCount', type: 'integer')
                 ]
             )
         )
@@ -310,7 +313,7 @@ class APIController extends AbstractController
                 DateTimeImmutable::createFromMutable($periodeDTO->dateDebut),
                 DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
             );
-        
+
         return $this->json(['status' => 'success', 'data' => $utilisateursCommentantLePlus]);
     }
 
@@ -327,7 +330,10 @@ class APIController extends AbstractController
                 properties: [
                     new OA\Property(property: 'id', type: 'integer'),
                     new OA\Property(property: 'username', type: 'string'),
-                    new OA\Property(property: 'postCount', type: 'integer')
+                    new OA\Property(property: 'postCount', type: 'integer'),
+                    new OA\Property(property: 'commentCount', type: 'integer'),
+                    new OA\Property(property: 'followersCount', type: 'integer'),
+                    new OA\Property(property: 'followingsCount', type: 'integer')
                 ]
             )
         )
