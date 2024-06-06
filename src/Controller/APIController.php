@@ -314,7 +314,7 @@ class APIController extends AbstractController
                 DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
             );
 
-        return $this->json(['status' => 'success', 'data' => $utilisateursCommentantLePlus]);
+        return $this->json($utilisateursCommentantLePlus);
     }
 
     //getUsersPostingTheMost
@@ -356,7 +356,7 @@ class APIController extends AbstractController
                 DateTimeImmutable::createFromMutable($periodeDTO->dateFin)
             );
 
-        return $this->json(['status' => 'success', 'data' => $utilisateursPostantLePlus]);
+        return $this->json($utilisateursPostantLePlus);
     }
 
 

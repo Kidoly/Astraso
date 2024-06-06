@@ -53,7 +53,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/user/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user, FollowRepository $followRepository, PostRepository $postRepository): Response
     {
         // Return the follow status of the current user
