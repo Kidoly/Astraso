@@ -33,26 +33,26 @@ final class Version20240403114616 extends AbstractMigration
         $this->addSql('CREATE TABLE report (id INT AUTO_INCREMENT NOT NULL, user_reporter_id INT NOT NULL, user_reported_id INT DEFAULT NULL, post_id INT DEFAULT NULL, reason_id INT NOT NULL, description VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_C42F778448D42F60 (user_reporter_id), INDEX IDX_C42F77843DA62723 (user_reported_id), INDEX IDX_C42F77844B89032C (post_id), INDEX IDX_C42F778459BB1592 (reason_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, image_id INT DEFAULT NULL, institution_id INT DEFAULT NULL, first_name VARCHAR(50) DEFAULT NULL, last_name VARCHAR(50) DEFAULT NULL, username VARCHAR(25) NOT NULL, password VARCHAR(100) NOT NULL, email VARCHAR(150) NOT NULL, biography LONGTEXT DEFAULT NULL, token_forgotten_password INT DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', UNIQUE INDEX UNIQ_8D93D6493DA5256D (image_id), INDEX IDX_8D93D64910405986 (institution_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', available_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', delivered_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_75EA56E0FB7336F0 (queue_name), INDEX IDX_75EA56E0E3BD61CE (available_at), INDEX IDX_75EA56E016BA31DB (delivered_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526CA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C4B89032C FOREIGN KEY (post_id) REFERENCES post (id)');
-        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_683444701896F387 FOREIGN KEY (following_user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470AF2612FD FOREIGN KEY (followed_user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_6834447010405986 FOREIGN KEY (institution_id) REFERENCES institution (id)');
-        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470FB34EF56 FOREIGN KEY (hashtag_id) REFERENCES hashtag (id)');
-        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926EF8697D13 FOREIGN KEY (comment_id) REFERENCES comment (id)');
-        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926E4B89032C FOREIGN KEY (post_id) REFERENCES post (id)');
-        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926EFB34EF56 FOREIGN KEY (hashtag_id) REFERENCES hashtag (id)');
-        $this->addSql('ALTER TABLE image_post ADD CONSTRAINT FK_A8B086133DA5256D FOREIGN KEY (image_id) REFERENCES image (id)');
-        $this->addSql('ALTER TABLE image_post ADD CONSTRAINT FK_A8B086134B89032C FOREIGN KEY (post_id) REFERENCES post (id)');
-        $this->addSql('ALTER TABLE `like` ADD CONSTRAINT FK_AC6340B3A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE `like` ADD CONSTRAINT FK_AC6340B34B89032C FOREIGN KEY (post_id) REFERENCES post (id)');
-        $this->addSql('ALTER TABLE post ADD CONSTRAINT FK_5A8A6C8DA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F778448D42F60 FOREIGN KEY (user_reporter_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F77843DA62723 FOREIGN KEY (user_reported_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F77844B89032C FOREIGN KEY (post_id) REFERENCES post (id)');
-        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F778459BB1592 FOREIGN KEY (reason_id) REFERENCES reason (id)');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D6493DA5256D FOREIGN KEY (image_id) REFERENCES image (id)');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D64910405986 FOREIGN KEY (institution_id) REFERENCES institution (id)');
+        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526CA76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C4B89032C FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_683444701896F387 FOREIGN KEY (following_user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470AF2612FD FOREIGN KEY (followed_user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_6834447010405986 FOREIGN KEY (institution_id) REFERENCES institution (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470FB34EF56 FOREIGN KEY (hashtag_id) REFERENCES hashtag (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926EF8697D13 FOREIGN KEY (comment_id) REFERENCES comment (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926E4B89032C FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE hashtagpc ADD CONSTRAINT FK_1D00926EFB34EF56 FOREIGN KEY (hashtag_id) REFERENCES hashtag (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE image_post ADD CONSTRAINT FK_A8B086133DA5256D FOREIGN KEY (image_id) REFERENCES image (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE image_post ADD CONSTRAINT FK_A8B086134B89032C FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE `like` ADD CONSTRAINT FK_AC6340B3A76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE `like` ADD CONSTRAINT FK_AC6340B34B89032C FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE post ADD CONSTRAINT FK_5A8A6C8DA76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F778448D42F60 FOREIGN KEY (user_reporter_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F77843DA62723 FOREIGN KEY (user_reported_id) REFERENCES user (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F77844B89032C FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE report ADD CONSTRAINT FK_C42F778459BB1592 FOREIGN KEY (reason_id) REFERENCES reason (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D6493DA5256D FOREIGN KEY (image_id) REFERENCES image (id) ON DELETE SET NULL');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D64910405986 FOREIGN KEY (institution_id) REFERENCES institution (id) ON DELETE SET NULL');
     }
 
     public function down(Schema $schema): void

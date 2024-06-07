@@ -64,14 +64,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, cascade: ['persist', 'remove'])]
     private Collection $likes;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Report::class, cascade: ['persist', 'remove'])]
-    private Collection $reports;
+    #[ORM\OneToMany(mappedBy: 'user_reporter', targetEntity: Report::class, cascade: ['persist', 'remove'])]
+    private Collection $reporter;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Hashtagpc::class, cascade: ['persist', 'remove'])]
-    private Collection $hashtagpcs;
+    #[ORM\OneToMany(mappedBy: 'user_reported', targetEntity: Report::class, cascade: ['persist', 'remove'])]
+    private Collection $reported;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Follow::class, cascade: ['persist', 'remove'])]
-    private Collection $follows;
+    #[ORM\OneToMany(mappedBy: 'followed_user', targetEntity: Follow::class, cascade: ['persist', 'remove'])]
+    private Collection $followed_user;
+
+    #[ORM\OneToMany(mappedBy: 'following_user', targetEntity: Follow::class, cascade: ['persist', 'remove'])]
+    private Collection $following_user;
 
     #[ORM\Column(type: 'datetime_immutable')]
     public \DateTimeImmutable $createdAt;
@@ -82,9 +85,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
-        $this->reports = new ArrayCollection();
-        $this->hashtagpcs = new ArrayCollection();
-        $this->follows = new ArrayCollection();
+        $this->reported = new ArrayCollection();
+        $this->reporter = new ArrayCollection();
+        $this->followed_user = new ArrayCollection();
+        $this->following_user = new ArrayCollection();
     }
 
     #[ORM\Column(length: 255)]
@@ -265,20 +269,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getLikes(): Collection
     {
         return $this->likes;
-    }
-
-    public function getReports(): Collection
-    {
-        return $this->reports;
-    }
-
-    public function getHashtagpcs(): Collection
-    {
-        return $this->hashtagpcs;
-    }
-
-    public function getFollows(): Collection
-    {
-        return $this->follows;
     }
 }
