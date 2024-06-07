@@ -176,7 +176,8 @@ class PostController extends AbstractController
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
-        if ($user !== $post->getUser()) {
+        // Check if the current user is the creator of the post or if the user is an admin
+        if ($user !== $post->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'Tu n\'es pas autorisé à modifier cette publication.');
             $referer = $request->headers->get('referer');
             $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
@@ -288,7 +289,7 @@ class PostController extends AbstractController
         }
 
         // Check if the current user is the creator of the post
-        if ($this->getUser() !== $post->getUser()) {
+        if ($this->getUser() !== $post->getUser() && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('error', 'Tu n\'es pas autorisé à supprimer cette publication.');
             return $this->redirect($referer);
         }

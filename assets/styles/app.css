@@ -31,7 +31,7 @@ body {
   color: var(--body-color);
   display: grid;
   height: 100vh;
-  grid-template-columns: repeat(3, 2fr);
+  grid-template-columns: 20% 50% 30%;
 }
 
 .btn-primary,
@@ -118,7 +118,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .tweet-wrap {
-  max-width: 490px;
+  max-width: 700px;
   background: #fff;
   border-radius: 3px;
   padding: 30px;
@@ -290,6 +290,24 @@ textarea:focus {
   height: 100vh;
   flex-direction: column;
   justify-content: space-between;
+  top: 0;
+  z-index: 1000;
+  position: -webkit-sticky;
+  position: fixed;
+}
+
+.trends {
+  padding-top: 25px;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+.card {
+  background-color: var(--body-bg);
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .profil-card {

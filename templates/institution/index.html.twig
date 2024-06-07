@@ -9,16 +9,18 @@
 	{% endblock %}
 
 	<div class="container">
+		<br>
 		<h1>Établissements</h1>
-		<a href="{{ path('app_institution_new') }}" class="btn btn-success">Create new</a>
+		<a href="{{ path('app_institution_new') }}" class="btn btn-success">Créer un établissement</a>
+		<br>
 		<br>
 
 		{% for institution in institutions %}
 			{% if institution.accepted %}
 				<div class="card">
 					<h3>{{ institution.name }}</h3>
-					<h5>{{ institution.postalCode }}</h5>
-					<h5>{{ institution.address }}</h5>
+					<h5>{{ institution.address }},
+						{{ institution.postalCode }}</h5>
 					{% if follows[institution.id] %}
 						<form action="{{ path('app_institution_unfollow', {'id': institution.id}) }}" method="post">
 							<input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ institution.id) }}">

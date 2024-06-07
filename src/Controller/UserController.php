@@ -156,7 +156,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'app_user_delete', methods: ['POST'])]
-    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager, User $user): Response
     {
         if (!$user) {
             $this->addFlash('error', 'User not found.');
@@ -199,7 +199,6 @@ class UserController extends AbstractController
             dump($e->getMessage());
             die();
         }
-
 
         return $this->redirectToRoute('app_login');
     }
