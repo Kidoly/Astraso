@@ -31,7 +31,7 @@ body {
   color: var(--body-color);
   display: grid;
   height: 100vh;
-  grid-template-columns: 20% 50% 30%;
+  grid-template-columns: repeat(3, 2fr);
 }
 
 .btn-primary,
