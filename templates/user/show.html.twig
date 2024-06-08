@@ -77,10 +77,11 @@
 					</div>
 
 					<div
-						class="card-footer text-white d-flex">
+						class="card-footer text-white d-flex justify-content-between">
 						<!-- Affichage des boutons d'action -->
 						{% if app.user.id == user.id %}
 							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr-2 ">
+							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr-2">
 								<i class="bi bi-gear-fill"></i>
 							</a>
 							<a href="{{ path('app_post_new') }}" class="btn btn-primary mr-2">
@@ -94,13 +95,21 @@
 							{% endif %}
 						{% endif %}
 						<!-- Report l'utilisateur -->
+
 						<a href="#" class="btn btn-primary mr-2" data-toggle="modal" data-target="#reportModal">Signaler</a>
+						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+
 						<!-- Supprimer l'utilisateur -->
 						{% if app.user.id == user.id or app.user.roles[0] == 'ROLE_ADMIN' %}
 							<form action="{{ path('app_user_delete', {'id': user.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur?');">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
 								<button type="submit" class="btn btn-danger">Supprimer</button>
 							</form>
+						{% endif %}
+
+
+						{% if app.user.id != user.id %}
+							<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
 						{% endif %}
 
 					</div>
