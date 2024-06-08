@@ -3,12 +3,13 @@
 namespace App\Form;
 
 use App\Entity\Post;
+use PhpMyAdmin\Triggers\Timing;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 
 class PostType extends AbstractType
 {
@@ -34,8 +35,9 @@ class PostType extends AbstractType
                     'accept' => 'image/*', // Accepter uniquement les fichiers image
                 ],
             ])
-            ->add('timing', null, [
-                'widget' => 'single_text',
+            ->add('timing', TimeType::class, [
+                'label' => "Temps de retard",
+                'required' => true,
             ]);
     }
 

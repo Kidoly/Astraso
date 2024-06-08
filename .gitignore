@@ -25,4 +25,3 @@
 ###< symfony/asset-mapper ###
 
 public/uploads/images/*
-deploy.sh
