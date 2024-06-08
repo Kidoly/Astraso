@@ -93,9 +93,7 @@
 								<a href="{{ path('app_user_unfollow', {'id': user.id}) }}" class="btn btn-danger mr-2">Ne plus suivre</a>
 							{% endif %}
 						{% endif %}
-						<!-- Report l'utilisateur -->
-<<<<<<< HEAD
-						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+						
 						<!-- Supprimer l'utilisateur -->
 						{% if app.user.id == user.id or app.user.roles[0] == 'ROLE_ADMIN' %}
 							<form action="{{ path('app_user_delete', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
@@ -103,12 +101,10 @@
 								<button type="submit" class="btn btn-danger">Supprimer</button>
 							</form>
 						{% endif %}
-
-=======
+						<!-- Report l'utilisateur -->
 						{% if app.user.id != user.id %}
 							<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
 						{% endif %}
->>>>>>> css-styles
 					</div>
 
 					<div

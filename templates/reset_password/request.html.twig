@@ -1,22 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}Réinitialiser votre mot de passe{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            grid-template-columns: repeat(1, 1fr)!important;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .section {
+            display: flex;
+            justify-content: center;
+        }
+
+        h1 {
+            color: var(--black-color);
+            text-align: center;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        small {
+            display: block;
+            margin-top: 10px;
+            color: #777;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--primary-color-hover);
+        }
+
+        .form {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .mb-4 {
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="section">
     {% for flash_error in app.flashes('reset_password_error') %}
         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
     {% endfor %}
-    <h1>Reset your password</h1>
-
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Enter your email address, and we will send you a
-                link to reset your password.
-            </small>
+    <div class="form">
+        <a href="{{ path('app_home') }}"><img class="menu-img" src="{{ asset('uploads/images/ASTRASO.png') }}" alt="Logo Astraso" width="200"></a>
+        <div class="mb-4">
+            <h1 class="h3 mb-3 font-weight-normal">Bonjour !</h1>
         </div>
+        {{ form_start(requestForm) }}
+            {{ form_row(requestForm.email, { 'label': 'Adresse e-mail', attr: { 'placeholder': 'Adresse e-mail' } }) }}
+            <div>
+                <small>
+                    Entrez votre adresse e-mail, et nous vous enverrons un
+                    lien pour réinitialiser votre mot de passe.
+                </small>
+            </div>
 
-        <button class="btn btn-primary">Send password reset email</button>
-    {{ form_end(requestForm) }}
+            <button class="btn btn-primary">Envoyer l'e-mail de réinitialisation du mot de passe</button>
+        {{ form_end(requestForm) }}
+    </div>
+    </div>
 {% endblock %}

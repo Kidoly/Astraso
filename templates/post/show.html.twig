@@ -45,7 +45,11 @@
 				</div>
 				<h5>{{ post.title }}</h5>
 				<p>{{ post.body }}</p>
-
+				<div class="tweet-timing">
+					<div>Temps de retard </div>
+					<span class="timing-span">{{ post.timing|date("H : i") }}</span>
+					<i class="fa-solid fa-clock"></i>
+					</div>
 			</div>
 		</div>
 		<div class="tweet-img-wrap">
@@ -105,6 +109,17 @@
 			margin-top: 1rem;
 			padding: 0;
 			margin-left: 0rem;
+		}
+
+		.tweet-timing {
+			display: flex;
+			align-items: center;
+			margin: 20px 20px
+			padding: 10px;	
+		}
+
+		.timing-span {
+			margin: 0 10px;
 		}
 	</style>
 {% endblock %}

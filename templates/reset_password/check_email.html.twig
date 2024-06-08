@@ -1,11 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Password Reset Email Sent{% endblock %}
+{% block title %}Email de réinitialisation du mot de passe envoyé{% endblock %}
 
-{% block body %}
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            grid-template-columns: repeat(1, 1fr)!important;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .section {
+            display: flex;
+            justify-content: center;
+        }
+        .card-body {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-img {
+            margin: 20px 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="section">
+        <div class="card-body p-md-5 mx-md-4">
+            <a href="{{ path('app_home') }}"><img class="menu-img" src="{{ asset('uploads/images/ASTRASO.png') }}" alt="Logo Astraso" width="200"></a>
+
+            <h1>Réinitialiser votre mot de passe</h1>
+            <p>
+                Si un compte correspondant à votre adresse e-mail existe, un e-mail vient d'être envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe.
+                Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+            </p>
+            <p>Si vous ne recevez pas d'e-mail, veuillez vérifier votre dossier de spam ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>
+        </div>
+    </div>
 {% endblock %}

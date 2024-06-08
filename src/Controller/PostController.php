@@ -138,6 +138,7 @@ class PostController extends AbstractController
         return $this->render('post/show.html.twig', [
             'post' => $post,
             'like' => $like,
+            
             'numberOfLikes' => $numberOfLikes,
             'numberOfSuperlikes' => $numberOfSuperlikes,
             'numberOfComments' => $numberOfComments,
