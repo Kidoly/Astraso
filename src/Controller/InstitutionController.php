@@ -11,6 +11,7 @@ use App\Repository\InstitutionRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/institution')]
@@ -88,15 +89,28 @@ class InstitutionController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_institution_delete', methods: ['POST'])]
+    #[Route('/institution/{id}/delete', name: 'app_institution_delete', methods: ['POST'])]
     public function delete(Request $request, Institution $institution, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $institution->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($institution);
-            $entityManager->flush();
+        if ($this->isGranted('ROLE_ADMIN')) {
+            if ($this->isCsrfTokenValid('delete' . $institution->getId(), $request->request->get('_token'))) {
+                $entityManager->remove($institution);
+                $entityManager->flush();
+            }
         }
+        return $this->redirect($request->headers->get('referer'));
+    }
 
-        return $this->redirectToRoute('app_institution_index', [], Response::HTTP_SEE_OTHER);
+    #[Route('/institution/{id}/accept', name: 'app_institution_accept', methods: ['POST'])]
+    public function accept(Request $request, Institution $institution, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            if ($this->isCsrfTokenValid('accept' . $institution->getId(), $request->request->get('_token'))) {
+                $institution->setAccepted(true);
+                $entityManager->flush();
+            }
+        }
+        return $this->redirect($request->headers->get('referer'));
     }
 
     #[Route('/follow/{id}', name: 'app_institution_follow', methods: ['POST'])]

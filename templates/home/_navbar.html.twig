@@ -1,100 +1,90 @@
 {% block content %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-{% endblock %}
 
-{% block navbar %}
-{%if app.user %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light flex-column navbar-custom">
-    <div class="container-fluid flex-column d-grid gap-2 h-100">    
-        <!-- Logo lien page principale -->
-        <a class="navbar-brand mb-3" href="{{ path('app_home') }}">
-            <img src="{{ asset('uploads/images/ASTRASO.png') }}" alt="Logo" width="130">
-        </a>
+	{% block stylesheets %}
+		<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+	{% endblock %}
 
-        <!-- Liens vers les différentes pages -->
-        <ul class="navbar-nav mb-3 flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_institution_index') }}">Établissements</a>
-            </li>
+	{% block navbar %}
+		<nav class="navbar navbar-expand-lg navbar-light bg-light flex-column navbar-custom">
+			<div
+				class="container-fluid flex-column d-grid gap-2 h-100">
+				<!-- Logo lien page principale -->
+				<a class="navbar-brand mb-3" href="{{ path('app_home') }}">
+					<img src="{{ asset('uploads/images/ASTRASO.png') }}" alt="Logo" width="130">
+				</a>
 
-            <li class="nav-item">
+				<!-- Liens vers les différentes pages -->
+				<ul class="navbar-nav mb-3 flex-column">
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_explorer') }}">Explorer</a>
+					</li>
+					<!-- if the user is an admin -->
+					{% if app.user.roles[0] == 'ROLE_ADMIN' %}
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('admin_dashboard') }}">Admin</a>
+						</li>
+					{% endif %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_institution_index') }}">Établissements</a>
+					</li>
+					<li class="nav-item"></li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_user_show', {'id': app.user.id}) }}">Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_user_edit', {'id': app.user.id}) }}">Paramètres</a>
+					</li>
+				</ul>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_user_show', {'id': app.user.id}) }}">Profile</a>
-            </li>
+				<!-- Bouton pour ajouter un post -->
+				<a href="{{ path('app_post_new') }}" class="btn btn-success">
+					<i class="bi bi-plus"></i>
+				</a>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_user_edit', {'id': app.user.id}) }}">Paramètres</a>
-            </li>
-
-
-        </ul>
-
-        <!-- Bouton pour ajouter un post -->
-        <a href="{{ path('app_post_new') }}" class="btn btn-success"><i class="bi bi-plus"></i></a>
-    
-        <!-- Lien vers la page de profil -->
-        
-        <div class="d-flex align-items-center mb-3 profil-card" id="profilCard">
-            
-            <div class="profile-info d-flex">
-                {% if app.user.image %}
-                    <img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
-                {% else %}
-                    <img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
-                {% endif %}
-                <div>
-                    <h6>{{ app.user.username }}</h6>
-                    <p class="mb-0">{{ app.user.firstname }}</p>
-                </div>
-            </div>
-            <i class="bi bi-gear-fill"></i>
-            <div class="dropdown-menu" aria-labelledby="profilCard" id="dropdownMenu">
-				<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
+				<!-- Lien vers la page de profil -->
+				<div class="d-flex align-items-center mb-3 profil-card" id="profilCard">
+					<div class="profile-info d-flex">
+						{% if app.user.image %}
+							<img src="{{ asset('uploads/images/' ~ app.user.image.image) }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
+						{% else %}
+							<img src="{{ asset('uploads/images/default.jpg') }}" alt="Profile picture" class="rounded-circle mr-2" width="50" height="50">
+						{% endif %}
+						<div>
+							<h6>{{ app.user.username }}</h6>
+							<p class="mb-0">{{ app.user.firstname }}</p>
+						</div>
+					</div>
+					<i class="bi bi-gear-fill"></i>
+					<div class="dropdown-menu" aria-labelledby="profilCard" id="dropdownMenu">
+						<a class="dropdown-item" href="{{ path('app_logout') }}">Déconnexion</a>
+					</div>
+				</div>
 			</div>
-            
-			
-        </div>
-    </div>
-</nav>
+		</nav>
+		<nav style="position: sticky; display: contents;" class="navbar navbar-expand-lg navbar-light bg-light flex-column navbar-custom">
+			<div class="container-fluid flex-column d-grid gap-2 h-100"></div>
+		</nav>
+	{% endblock %}
 
-<style>
-    img {
-        object-fit: cover;
-    }
-    </style>
+	{% block javascripts %}
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+const profilCard = document.getElementById('profilCard');
+const dropdownMenu = document.getElementById('dropdownMenu');
 
-{%endif%}
+profilCard.addEventListener('click', function (event) {
+dropdownMenu.classList.toggle('show');
+});
 
-
-
-
-{% endblock %}
-{% block javascripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const profilCard = document.getElementById('profilCard');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-
-        profilCard.addEventListener('click', function (event) {
-            dropdownMenu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', function (event) {
-            if (!profilCard.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-    });
-</script>
-{% endblock %}
-{% endblock %}
-
-
-
-
+window.addEventListener('click', function (event) {
+if (! profilCard.contains(event.target)) {
+dropdownMenu.classList.remove('show');
+}
+});
+});
+		</script>
+	{% endblock %}

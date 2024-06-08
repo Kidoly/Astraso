@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+
+
+use App\Entity\User;
+use App\Entity\Institution;
+use App\Entity\Hashtag;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,6 +36,12 @@ class Post
 
     #[ORM\Column]
     public ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\ManyToOne(inversedBy: 'posts')]
+    private ?Institution $institution = null;
+
+    #[ORM\ManyToOne(inversedBy: 'posts')]
+    private ?Hashtag $hashtag = null;
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $comments;
@@ -119,6 +130,30 @@ class Post
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getInstitution(): ?Institution
+    {
+        return $this->institution;
+    }
+
+    public function setInstitution(?Institution $institution): static
+    {
+        $this->institution = $institution;
+
+        return $this;
+    }
+
+    public function getHashtag(): ?Hashtag
+    {
+        return $this->hashtag;
+    }
+
+    public function setHashtag(?Hashtag $hashtag): static
+    {
+        $this->hashtag = $hashtag;
 
         return $this;
     }

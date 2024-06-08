@@ -9,12 +9,10 @@
 		{{ parent() }}
 	{% endblock %}
 
-	<div class="container mt-4">
+	<div class="container mt-4" style="width: max-content;">
 		<div class="row justify-content-center">
 			<div>
 				<div class="card">
-					<div class="card-header">User Profile</div>
-
 					<div class="card-body">
 						{% if user.image %}
 							<img src="{{ asset('uploads/images/' ~ user.image.image) }}" alt="Profile picture" class="mx-auto d-block" width="100" height="100" style="border-radius: 50%; object-fit: cover; margin: 5%;">
@@ -44,10 +42,6 @@
 									<th scope="row">Membre depuis</th>
 									<td>{{ user.createdAt ? user.createdAt|date('M d, Y') : '' }}</td>
 								</tr>
-								<tr>
-									<th scope="row">Email</th>
-									<td>{{ user.email }}</td>
-								</tr>
 								{% if user.institution %}
 									<tr>
 										<th scope="row">Établissements</th>
@@ -62,16 +56,22 @@
 					<div class="card-footer bg-light">
 						<div class="row">
 							<div class="col">
-								<p class="text-muted">Nombre de followers :
-									{{ numberOfFollowers }}</p>
+								<p class="text-muted">
+									<strong>
+										{{ numberOfFollowers }}</strong>
+									followers</p>
 							</div>
 							<div class="col">
-								<p class="text-muted">Nombre de personnes suivies :
-									{{ numberOfFollowings }}</p>
+								<p class="text-muted">
+									<strong>
+										{{ numberOfFollowings }}</strong>
+									suivi(e)s</p>
 							</div>
 							<div class="col">
-								<p class="text-muted">Nombre de posts :
-									{{ numberOfPosts }}</p>
+								<p class="text-muted">
+									<strong>
+										{{ numberOfPosts }}</strong>
+									posts</p>
 							</div>
 						</div>
 					</div>
@@ -80,10 +80,11 @@
 						class="card-footer text-white d-flex justify-content-between">
 						<!-- Affichage des boutons d'action -->
 						{% if app.user.id == user.id %}
+							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr-2 ">
 							<a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mr-2">
 								<i class="bi bi-gear-fill"></i>
 							</a>
-							<a href="{{ path('app_post_new') }}" class="btn btn-success">
+							<a href="{{ path('app_post_new') }}" class="btn btn-primary mr-2">
 								<i class="bi bi-plus"></i>
 							</a>
 						{% else %}
@@ -94,36 +95,43 @@
 							{% endif %}
 						{% endif %}
 						<!-- Report l'utilisateur -->
-<<<<<<< HEAD
+
+						<a href="#" class="btn btn-primary mr-2" data-toggle="modal" data-target="#reportModal">Signaler</a>
 						<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
+
 						<!-- Supprimer l'utilisateur -->
 						{% if app.user.id == user.id or app.user.roles[0] == 'ROLE_ADMIN' %}
-							<form action="{{ path('app_user_delete', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+							<form action="{{ path('app_user_delete', {'id': user.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur?');">
 								<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
 								<button type="submit" class="btn btn-danger">Supprimer</button>
 							</form>
 						{% endif %}
 
-=======
+
 						{% if app.user.id != user.id %}
 							<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Signaler</a>
 						{% endif %}
->>>>>>> css-styles
+
 					</div>
 
 					<div
 						class="card-footer bg-light">
 						<!-- Affichage des posts de l'utilisateur -->
-						<div class="card-header">Posts</div>
-						<div class="card-body">
-							{% if numberOfPosts == 0 %}
-								<p>Il n'y a pas de post</p>
-							{% else %}
-								{% for post in posts %}
+						{% if numberOfPosts == 0 %}
+							<p>Il n'y a pas de post</p>
+						{% else %}
+							{% for post in posts %}
+								<div class="tweet-wrap" id="post-{{ post.id }}" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
 									{% include 'post/show.html.twig' with {'post': post} %}
-								{% endfor %}
-							{% endif %}
-						</div>
+								</div>
+								{% set included = false %}
+
+								{% if not included %}
+									{% include 'post/modals.html.twig' %}
+									{% set included = true %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -144,24 +152,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- Success Modal HTML -->
-		<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="successModalLabel">Report</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						Le report a été envoyé avec succès!
-					</div>
-				</div>
-			</div>
-		</div>
-
-
 		<script>
 			$(document).ready(function () { // Trigger modal open
 $('.btn[data-target="#reportModal"]').click(function () {
@@ -175,56 +165,6 @@ $('#reportModal').modal('hide');
 		</script>
 
 
-	{% endblock %}
-	{% block javascripts %}
-		{{ parent() }}
-		<script>
-			$(document).ready(function () { // Function to parse query parameters from the URL
-function getQueryParam(param) {
-var result = new RegExp('[\?&]' + param + '=([^&#]*)').exec(window.location.href);
-return result ? decodeURIComponent(result[1].replace(/\+/g, ' ')) : false;
-}
-
-// Function to remove a specific query parameter
-function removeQueryParam(parameter) {
-var url = document.location.href;
-var urlparts = url.split('?');
-
-if (urlparts.length >= 2) {
-var prefix = encodeURIComponent(parameter) + '=';
-var pars = urlparts[1].split(/[&;]/g);
-
-// Loop through query strings, exclude target query param
-for (var i = pars.length; i-- > 0;) {
-if (pars[i].lastIndexOf(prefix, 0) !== -1) {
-pars.splice(i, 1);
-}
-}
-
-// Rejoin the URL without the target parameter
-url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
-history.replaceState(null, document.title, url); // Replace the state in the history
-}
-}
-
-// Check for 'success' query parameter and show modal if present
-var success = getQueryParam('success');
-if (success) {
-$('#successModal').modal('show');
-removeQueryParam('success'); // Remove 'success' from URL
-}
-
-// Setup triggers for modals
-$('.btn[data-target="#reportModal"]').click(function () {
-$('#reportModal').modal('show');
-});
-
-$('.close').on('click', function () {
-$('#reportModal').modal('hide');
-$('#successModal').modal('hide');
-});
-});
-		</script>
 	{% endblock %}
 	{% block footer %}
 		{% include 'home/_trends.html.twig' %}

@@ -53,7 +53,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/user/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user, FollowRepository $followRepository, PostRepository $postRepository): Response
     {
         // Return the follow status of the current user
@@ -156,53 +156,25 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'app_user_delete', methods: ['POST'])]
-    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager, User $user): Response
     {
-        if (!$user) {
-            $this->addFlash('error', 'User not found.');
-            return $this->redirectToRoute('app_user_index');
-        }
-
+        // Check for a valid CSRF token
         if (!$this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Invalid CSRF token.');
             return $this->redirectToRoute('app_user_index');
         }
 
-        try {
-            $entityManager->beginTransaction();
+        // Remove the user entity
+        $entityManager->remove($user);
+        $entityManager->flush();
 
-            // Manually remove relationships if not handled by cascade
-            foreach ($user->getPosts() as $post) {
-                $entityManager->remove($post);
-            }
-            foreach ($user->getReports() as $report) {
-                $entityManager->remove($report);
-            }
-            foreach ($user->getFollows() as $follow) {
-                $entityManager->remove($follow);
-            }
-            foreach ($user->getComments() as $comment) {
-                $entityManager->remove($comment);
-            }
-            foreach ($user->getLikes() as $like) {
-                $entityManager->remove($like);
-            }
+        // Add a success flash message
+        $this->addFlash('success', 'User deleted successfully.');
 
-            $entityManager->remove($user);
-            $entityManager->flush();
-            $entityManager->commit();
-
-            $this->addFlash('success', 'User deleted successfully.');
-        } catch (\Exception $e) {
-            $entityManager->rollback();
-            $this->addFlash('error', 'Failed to delete user due to a database error.');
-            dump($e->getMessage());
-            die();
-        }
-
-
+        // Redirect to the login route
         return $this->redirectToRoute('app_login');
     }
+
 
 
     #[Route('/user/{id}/follow', name: 'app_user_follow', methods: ['GET'])]
