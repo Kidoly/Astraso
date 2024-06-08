@@ -4,6 +4,8 @@
 	{% block stylesheets %}
 		<link rel="stylesheet" href="{{ asset('css/app.css') }}">
 	{% endblock %}
+    <!--If user connect-->
+    {% if app.user %}
 
 	{% block navbar %}
 		<nav class="navbar navbar-expand-lg navbar-light bg-light flex-column navbar-custom">
@@ -22,6 +24,7 @@
 					<li class="nav-item">
 						<a class="nav-link" href="{{ path('app_explorer') }}">Explorer</a>
 					</li>
+
 					<!-- if the user is an admin -->
 					{% if app.user.roles[0] == 'ROLE_ADMIN' %}
 						<li class="nav-item">
@@ -70,6 +73,8 @@
 		</nav>
 	{% endblock %}
 
+    {% endif %}
+
 	{% block javascripts %}
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
@@ -88,3 +93,4 @@ dropdownMenu.classList.remove('show');
 });
 		</script>
 	{% endblock %}
+{% endblock%}
