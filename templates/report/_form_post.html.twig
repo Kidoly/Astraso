@@ -1,0 +1,10 @@
+{{ form_start(form, {
+    'action': path('app_user_report_post', {'id': post.id}),
+    'method': 'POST',
+}) }}
+{{ form_row(form.description) }}
+{{ form_row(form.reason, {
+    'placeholder': 'Selectionner une raison',
+}) }}
+<button type="submit" class="btn btn-primary">{{ button_label|default('Envoyer') }}</button>
+{{ form_end(form) }}

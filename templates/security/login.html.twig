@@ -1,57 +1,132 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion{% endblock %}
 
-{% block body %}
-<div class="container-fluid h-100">
-    <div class="row h-100 justify-content-center align-items-center">
-        <form class="form-signin col-md-6" method="post">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            grid-template-columns: repeat(1, 1fr)!important;
+        }
+        .gradient-form {
+            background-color: #eee;
+        }
+        .container {
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 1.25rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+        .form-control {
+            border-radius: 1.25rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            background-color: #4e73df;
+            border-radius: 1.25rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #3d5bb5;
+        }
+        .input-group-append .btn {
+            border-radius: 0 1.25rem 1.25rem 0;
+        }
+        .gradient-custom-2 {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+    </style>
+{% endblock %}
 
-            {% if app.user %}
-                <div class="mb-3">
-                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-                </div>
-            {% endif %}
+{% block content %}
+<section class="gradient-form d-flex justify-content-center align-items-center">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        {# Colonne pour le formulaire de connexion #}
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
 
-            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                                {# Afficher un message d'erreur si nécessaire #}
+                                {% if error %}
+                                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                {% endif %}
 
-            <label for="inputUsername" class="sr-only">Username</label>
-            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" placeholder="Username" autocomplete="username" required autofocus>
-            
-            <label for="inputPassword" class="sr-only">Password</label>
-            <div class="input-group mb-3">
-                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" autocomplete="current-password" required>
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">Show</button>
+                                {# Vérifier si l'utilisateur est déjà connecté #}
+                                {% if app.user %}
+                                    <div class="mb-3">
+                                        Vous êtes connecté en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Déconnexion</a>.
+                                    </div>
+                                {% endif %}
+
+                                {# Afficher le logo #}
+                                <div class="text-center">
+                                    <img src="{{ asset('/uploads/images/ASTRASO.png') }}" class="mb-5 w-50" alt="Astraso">
+                                </div>
+
+                                {# Titre du formulaire de connexion #}
+                                <div class="text-center">
+                                    <h4 class="h3 mb-4">Connexion</h4>
+                                </div>
+
+                                {# Formulaire de connexion #}
+                                <form class="form-signin" method="post">
+                                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" placeholder="Nom d'utilisateur" autocomplete="username" required autofocus>
+                                    
+                                    <div class="input-group mb-3">
+                                        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mot de passe" autocomplete="current-password" required>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-secondary" id="togglePassword"><i class="bi bi-eye-fill"></i></button>
+                                        </div>
+                                    </div>
+                                    <a class="text-muted" href="{{ path('app_forgot_password_request') }}">Mot de passe oublié?</a>
+
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                    <button class="btn btn-primary btn-lg btn-block" type="submit">Se connecter</button>
+                                </form>
+
+                                {# Lien pour l'inscription #}
+                                <div class="text-center mt-4">
+                                    <p>Vous n'avez pas de compte ? <a href="{{ path('app_register') }}" class="text-dark fw-bold">Inscrivez-vous</a></p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {# Colonne pour le texte descriptif #}
+                        <div class="col-lg-6 gradient-custom-2 d-flex align-items-center">
+                            <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                <h4 class="mb-4">Gardez une trace de vos retards en toute simplicité.</h4>
+                                <p class="small mb-0">Astraso est une application qui vous permet de signaler facilement vos retards à votre équipe. Avec une interface simple et intuitive, vous pouvez rapidement saisir la raison de votre retard et le communiquer à vos collègues. Astraso vous aide à rester organisé et à maintenir une communication ouverte au sein de votre équipe.</p>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-            <button class="btn btn-lg btn-primary btn-block" type="submit">
-                Sign in
-            </button>
-            <div class="col-md-6">
-                <p>Don't have an account? <a href="{{ path('app_register') }}">Create one</a></p>
-            </div>
-        </form>
-        
+        </div>
     </div>
-</div>
+</section>
 
 <script>
     document.getElementById('togglePassword').addEventListener('click', function() {
         const passwordInput = document.getElementById('inputPassword');
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
-            this.textContent = 'Hide';
+            this.innerHTML = '<i class="bi bi-eye-fill"></i>';
         } else {
             passwordInput.type = 'password';
-            this.textContent = 'Show';
+            this.innerHTML = '<i class="bi bi-eye-slash-fill"></i>';
         }
     });
 </script>
+
 {% endblock %}

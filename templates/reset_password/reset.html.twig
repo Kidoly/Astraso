@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réinitialiser votre mot de passe{% endblock %}
+
+{% block body %}
+    <div style="max-width: 400px; margin: 50px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+
+        <h1 style="color: #333; font-size: 24px;">Réinitialiser votre mot de passe</h1>
+
+        {{ form_start(resetForm) }}
+            <div style="margin-bottom: 20px;">
+                {{ form_row(resetForm.plainPassword, {'label': ' ', placeholder: 'Nouveau mot de passe'}) }}
+            </div>
+            <button style="background-color: var(--primary-color); color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; hover:background-color: var(--primary-color-hover)">Réinitialiser le mot de passe</button>
+        {{ form_end(resetForm) }}
+
+    </div>
+{% endblock %}

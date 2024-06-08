@@ -1,0 +1,17 @@
+{% block title %}Réinitialisation du mot de passe{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 50px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+
+        <h1 style="color: #333; font-size: 24px;">Bonjour !</h1>
+
+        <p style="color: #555; font-size: 16px;">Pour réinitialiser votre mot de passe, veuillez visiter le lien suivant :</p>
+
+        <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" style="color: #007bff; text-decoration: none; word-break: break-all; font-size: 14px;">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
+
+        <p style="color: #555; font-size: 16px;">Ce lien expirera dans <span style="color: #ff6347;">{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</span>.</p>
+
+        <p style="color: #555; font-size: 16px;">À bientôt !</p>
+
+    </div>
+{% endblock %}

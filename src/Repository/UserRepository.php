@@ -62,4 +62,69 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function searchByQuery(string $query)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.username LIKE :query OR u.email LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countCreationsBetweenDates(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): int
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('COUNT(u.id)')
+            ->where('u.createdAt >= :start AND u.createdAt <= :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE);
+
+        $query = $qb->getQuery();
+
+        return (int) $query->getSingleScalarResult();
+    }
+
+    //getUsersPostingTheMost (5 utilisateurs ayant posté le plus sur une période donnée)
+    public function getUsersPostingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+{
+    $qb = $this->createQueryBuilder('u');
+    $qb->select('u.username, COUNT(p.id) as postCount')
+        ->leftJoin('u.posts', 'p') // Vérifiez que 'posts' est le bon nom d'association
+        ->where('p.created_at BETWEEN :start AND :end')
+        ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+        ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+        ->groupBy('u.id')
+        ->orderBy('postCount', 'DESC')
+        ->setMaxResults(5); // Limiter le nombre de résultats pour éviter les surcharges
+
+    $query = $qb->getQuery();
+
+    // Ajout de la gestion des erreurs
+    try {
+        return $query->getResult();
+    } catch (\Exception $e) {
+        // Gérer l'exception de manière appropriée
+        throw new \RuntimeException('Erreur lors de la récupération des utilisateurs postant le plus : ' . $e->getMessage());
+    }
+}
+
+
+    //getUsersCommentingTheMost (5 utilisateurs ayant commenté le plus sur une période donnée)
+    public function getUsersCommentingTheMost(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.username, COUNT(c.id) as commentCount')
+            ->leftJoin('u.comments', 'c')
+            ->where('c.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $startDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->setParameter('end', $endDate, \Doctrine\DBAL\Types\Types::DATETIME_IMMUTABLE)
+            ->groupBy('u.id')
+            ->orderBy('commentCount', 'DESC')
+            ->setMaxResults(5);
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
 }

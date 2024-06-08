@@ -1,13 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Edit User
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('styles/user.css') }}">
+	<style>
+		/* Supprimez la hauteur maximale et ajoutez une marge entre les labels */
+		.form-group label {
+			max-height: none; /* Supprimez la hauteur maximale */
+			margin-bottom: 0.5rem; /* Ajoutez une marge en bas */
+		}
+	</style>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+	{% block navbar %}
+		{% include 'home/_navbar.html.twig' %}
+	{% endblock %}
+	{% block content %}
+		<div class="container mt-4">
+			<h1 class="mb-4">Paramètres du compte</h1>
 
-    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
+			{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+			{{ form_errors(form) }}
+			{# Display global errors of the form #}
+			{% for child in form %}
+				<div>
+					{{ form_label(child, null, {'label_attr': {'class': ''}}) }}
+					{# Remove 'col-sm-2' class here #}
+					<div>
+						{{ form_widget(child, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(child) }}
+						{# Display field errors #}
+					</div>
+				</div>
+			{% endfor %}
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+			<div class="form-group row">
+				<div
+					class="col-sm-10">
+					<!-- Correct button syntax -->
+					<button type="submit" class="btn btn-primary">Modifier</button>
+					<!-- Return button that takes you back from where you came -->
+					<a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="btn btn-secondary">Annuler</a>
+				</div>
+			</div>
+		</div>
+		{{ form_end(form) }}
+	</div>
 {% endblock %}
+
+{% block footer %}
+	{% include 'home/_trends.html.twig' %}
+{% endblock %}{% endblock %}

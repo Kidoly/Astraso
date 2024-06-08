@@ -9,7 +9,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
+
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
@@ -51,12 +55,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne]
     private ?Institution $institution = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Post::class, cascade: ['persist', 'remove'])]
+    private Collection $posts;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class, cascade: ['persist', 'remove'])]
+    private Collection $comments;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, cascade: ['persist', 'remove'])]
+    private Collection $likes;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Report::class, cascade: ['persist', 'remove'])]
+    private Collection $reports;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Hashtagpc::class, cascade: ['persist', 'remove'])]
+    private Collection $hashtagpcs;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Follow::class, cascade: ['persist', 'remove'])]
+    private Collection $follows;
+
     #[ORM\Column(type: 'datetime_immutable')]
     public \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->posts = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->likes = new ArrayCollection();
+        $this->reports = new ArrayCollection();
+        $this->hashtagpcs = new ArrayCollection();
+        $this->follows = new ArrayCollection();
     }
 
     #[ORM\Column(length: 255)]
@@ -224,31 +252,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function getHashtagpcs(): Collection
+    {
+        return $this->hashtagpcs;
+    }
 
     public function getFollows(): Collection
     {
         return $this->follows;
-    }
-
-    public function addFollow(Follow $follow): static
-    {
-        if (!$this->follows->contains($follow)) {
-            $this->follows->add($follow);
-            $follow->setFollowingUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollow(Follow $follow): static
-    {
-        if ($this->follows->removeElement($follow)) {
-            // set the owning side to null (unless already changed)
-            if ($follow->getFollowingUser() === $this) {
-                $follow->setFollowingUser(null);
-            }
-        }
-
-        return $this;
     }
 }

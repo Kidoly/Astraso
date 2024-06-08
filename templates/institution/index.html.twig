@@ -1,41 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Institution index{% endblock %}
+{% block title %}Établissements
+{% endblock %}
 
 {% block body %}
-    <h1>Institution index</h1>
+	{% block navbar %}
+		{{ parent() }}
+	{% endblock %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Postal_code</th>
-                <th>Address</th>
-                <th>Accepted</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for institution in institutions %}
-            <tr>
-                <td>{{ institution.id }}</td>
-                <td>{{ institution.name }}</td>
-                <td>{{ institution.postalCode }}</td>
-                <td>{{ institution.address }}</td>
-                <td>{{ institution.accepted ? 'Yes' : 'No' }}</td>
-                <td>
-                    <a href="{{ path('app_institution_show', {'id': institution.id}) }}">show</a>
-                    <a href="{{ path('app_institution_edit', {'id': institution.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+	<div class="container">
+		<h1>Établissements</h1>
+		<a href="{{ path('app_institution_new') }}" class="btn btn-success">Create new</a>
+		<br>
 
-    <a href="{{ path('app_institution_new') }}">Create new</a>
+		{% for institution in institutions %}
+			{% if institution.accepted %}
+				<div class="card">
+					<h3>{{ institution.name }}</h3>
+					<h5>{{ institution.postalCode }}</h5>
+					<h5>{{ institution.address }}</h5>
+					{% if follows[institution.id] %}
+						<form action="{{ path('app_institution_unfollow', {'id': institution.id}) }}" method="post">
+							<input type="hidden" name="_token" value="{{ csrf_token('unfollow' ~ institution.id) }}">
+							<button type="submit" class="btn btn-danger mr-2">Ne plus suivre</button>
+						</form>
+					{% else %}
+						<form action="{{ path('app_institution_follow', {'id': institution.id}) }}" method="post">
+							<input type="hidden" name="_token" value="{{ csrf_token('follow' ~ institution.id) }}">
+							<button type="submit" class="btn btn-primary mr-2">Suivre</button>
+						</form>
+					{% endif %}
+				</div>
+			{% endif %}
+		{% endfor %}
+		{% if institutions|length == 0 %}
+			<tr>
+				<td colspan="6">Il n'y a aucun établissements</td>
+			</tr>
+		{% endif %}
+
+	</div>
+
+	{% block footer %}
+		{{ parent() }}
+	{% endblock %}
 {% endblock %}

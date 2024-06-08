@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Post;
 use App\Entity\Comment;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Comment>
@@ -45,4 +46,14 @@ class CommentRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function countComments(Post $post): int
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.post = :post')
+            ->setParameter('post', $post)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

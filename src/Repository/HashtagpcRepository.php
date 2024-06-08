@@ -45,4 +45,18 @@ class HashtagpcRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    // A custom method to find 5 most popular hashtags (by number of posts)
+    public function findPopularHashtags(): array
+    {
+        return $this->createQueryBuilder('h')
+            ->select('ht.name, COUNT(h.id) as postCount')
+            ->join('h.hashtag', 'ht')
+            ->groupBy('ht.name')
+            ->orderBy('postCount', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
 }

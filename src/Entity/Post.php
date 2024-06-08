@@ -23,29 +23,29 @@ class Post
     private ?string $body = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $timing = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    public ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $comments;
 
     #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'post', orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $reports;
 
-    #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post')]
+    #[ORM\OneToMany(targetEntity: Hashtagpc::class, mappedBy: 'post', cascade: ['remove'])]
     private Collection $hashtagpcs;
 
-    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post')]
-    private Collection $imagePosts;
+    #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', cascade: ['persist'], orphanRemoval: true)]
+    private $imagePosts;
 
     public function __construct()
     {
@@ -54,7 +54,9 @@ class Post
         $this->reports = new ArrayCollection();
         $this->hashtagpcs = new ArrayCollection();
         $this->imagePosts = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
     }
+
 
     public function getId(): ?int
     {
@@ -218,24 +220,24 @@ class Post
     }
 
     /**
-     * @return Collection<int, ImagePost>
+     * @return Collection|ImagePost[]
      */
     public function getImagePosts(): Collection
     {
-        return $this->imagePosts;
+        return $this->imagePosts ?? new ArrayCollection();
     }
 
-    public function addImagePost(ImagePost $imagePost): static
+    public function addImagePost(ImagePost $imagePost): self
     {
         if (!$this->imagePosts->contains($imagePost)) {
-            $this->imagePosts->add($imagePost);
+            $this->imagePosts[] = $imagePost;
             $imagePost->setPost($this);
         }
 
         return $this;
     }
 
-    public function removeImagePost(ImagePost $imagePost): static
+    public function removeImagePost(ImagePost $imagePost): self
     {
         if ($this->imagePosts->removeElement($imagePost)) {
             // set the owning side to null (unless already changed)

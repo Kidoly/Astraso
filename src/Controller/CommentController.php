@@ -2,14 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Hashtag;
 use App\Entity\Comment;
+use App\Entity\Hashtagpc;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/comment')]
 class CommentController extends AbstractController
@@ -22,33 +24,6 @@ class CommentController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_comment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $comment = new Comment();
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($comment);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_comment_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('comment/new.html.twig', [
-            'comment' => $comment,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_comment_show', methods: ['GET'])]
-    public function show(Comment $comment): Response
-    {
-        return $this->render('comment/show.html.twig', [
-            'comment' => $comment,
-        ]);
-    }
 
     #[Route('/{id}/edit', name: 'app_comment_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response
@@ -57,25 +32,78 @@ class CommentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            // Extract hashtags from the comment body
+            $body = $comment->getBody();
+            preg_match_all('/#(\w+)/', $body, $matches);
+            $newTags = array_unique($matches[1]);
 
-            return $this->redirectToRoute('app_comment_index', [], Response::HTTP_SEE_OTHER);
+            // Get existing hashtags from the database linked to this comment
+            $existingTags = [];
+            foreach ($comment->getHashtagpcs() as $hashtagpc) {
+                $existingTags[] = $hashtagpc->getHashtag()->getName();
+                if (!in_array($hashtagpc->getHashtag()->getName(), $newTags)) {
+                    $entityManager->remove($hashtagpc);
+                }
+            }
+
+            // Add new hashtags
+            foreach ($newTags as $tagName) {
+                if (!in_array($tagName, $existingTags)) {
+                    $hashtag = $entityManager->getRepository(Hashtag::class)->findOneBy(['name' => $tagName]);
+                    if (!$hashtag) {
+                        $hashtag = new Hashtag();
+                        $hashtag->setName($tagName);
+                        $entityManager->persist($hashtag);
+                    }
+
+                    $hashtagPc = new Hashtagpc();
+                    $hashtagPc->setComment($comment);
+                    $hashtagPc->setHashtag($hashtag);
+                    $entityManager->persist($hashtagPc);
+                }
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Comment updated successfully.');
+
+            // Redirect to the referrer URL
+            $referrer = $request->headers->get('referer');
+            return $this->redirect($referrer ? $referrer : $this->generateUrl('app_home'));
         }
 
-        return $this->render('comment/edit.html.twig', [
+        return $this->render('comment/edit_modal_form.html.twig', [
+            'form' => $form->createView(),
             'comment' => $comment,
-            'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_comment_delete', methods: ['POST'])]
+
+    #[Route('/{id}/delete', name: 'app_comment_delete', methods: ['POST'])]
     public function delete(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$comment->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($comment);
-            $entityManager->flush();
+        $post = $comment->getPost();
+        // Retrieve the last page from the session or set default redirection if none is set
+        $lastPage = $request->getSession()->get('last_page', $this->generateUrl('app_post_index'));
+        $referer = $request->headers->get('referer', $lastPage);
+
+        // Check CSRF token validity for security
+        if (!$this->isCsrfTokenValid('delete' . $comment->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirect($referer);
         }
 
-        return $this->redirectToRoute('app_comment_index', [], Response::HTTP_SEE_OTHER);
+        // Check if the current user is the creator of the comment or an admin or the creator of the post
+        if (!($this->getUser() === $comment->getUser() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $post->getUser())) {
+            $this->addFlash('error', 'Tu n\'es pas autorisé à supprimer cette publication.');
+            return $this->redirect($referer);
+        }
+
+
+        // Proceed with deletion
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'The post has been deleted successfully.');
+        return $this->redirect($referer);
     }
 }

@@ -1,0 +1,97 @@
+<div class="comments">
+	{% for comment in comments %}
+		<div class="comment">
+			<div class="tweet-header">
+				{% if comment.user.image %}
+					<img src="{{ asset('uploads/images/' ~ comment.user.image.image) }}" alt="Profile picture" class="avator">
+				{% else %}
+					<img src="{{ asset('uploads/images/default.jpg') }}" alt="" class="avator">
+				{% endif %}
+				<div class="tweet-header-info">
+					<a href="{{ path('app_user_show', {'id': comment.user.id}) }}">
+						{% if comment.user.lastname != null and comment.user.firstname != null %}
+							{{ comment.user.firstname }}
+							{{ comment.user.lastname }}
+						{% else %}
+							{{ comment.user.username }}
+						{% endif %}
+						<span>@{{ comment.user.username }}</span>
+					</a>
+					<span>{{ comment.createdAt|date('d M, Y') }}</span>
+					{% if app.user and app.user.id == comment.user.id %}
+						<div class="css-dropdown">
+							<button class="dropdown-button">•••</button>
+							<div class="dropdown-content">
+							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editCommentModal-{{ comment.id }}">
+								<i class="fa-solid fa-pen"></i>
+								Modifier
+                            </button>
+								{% if (app.user and app.user.id == comment.user.id) or app.user == post.user %}
+									{{ include('comment/_delete_form.html.twig') }}
+								{% endif %}
+							</div>
+						</div>
+					{% endif %}
+					<p>{{ comment.body }}</p>
+				</div>
+			</div>
+		</div>
+		<!-- Modify Comment Modal -->
+            <div class="modal fade" id="editCommentModal-{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel-{{ comment.id }}" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modifyCommentModal-{{ post.id }}">Répondre à @{{ post.user.username }}</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="tweet-wrap" style="margin: 0; padding-bottom: 0;">
+						<div
+							class="tweet-header">
+							<!-- If user has a image, display it -->
+							{% if post.user.image %}
+								<img src="{{ asset('uploads/images/' ~ post.user.image.image) }}" alt="Profile picture" class="avator">
+							{% else %}
+								<img src="asset('uploads/images/default.png" alt="" class="avator">
+							{% endif %}
+
+							<div class="tweet-header-info">
+								{% if post.user.lastname != null and post.user.firstname != null %}
+									{{ post.user.firstname }}
+									{{ post.user.lastname }}
+								{% else %}
+									{{ post.user.username }}
+								{% endif %}
+								<span>@{{ post.user.username }}</span>
+								<span>
+									{{ post.createdAt|date('d M, Y') }}
+								</span>
+								<h5>{{ post.title }}</h5>
+								<p>{{ post.body }}</p>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="modal-body">
+                        {{ render(controller('App\\Controller\\CommentController::edit', {'id': comment.id})) }}
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+            $(document).ready(function() {
+                // Trigger modal with Bootstrap 4
+                $('.btn[data-toggle="modal"]').click(function() {
+                    var targetId = $(this).attr('data-target');
+                    $(targetId).modal('show');
+                });
+
+                $('.close').click(function() {
+                    $(this).closest('.modal').modal('hide');
+                });
+            });
+        </script>
+
+	{% endfor %}
+</div>

@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Like;
+use App\Entity\Post;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,4 +47,39 @@ class LikeRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function countLikes(Post $post): int
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.post = :post')
+            ->andWhere('l.superlike = false')
+            ->setParameter('post', $post)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countSuperLikes(Post $post): int
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.post = :post')
+            ->andWhere('l.superlike = true')
+            ->setParameter('post', $post)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+
+    public function findLastSuperlikeByUser(User $user): ?Like
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.user = :user')
+            ->andWhere('l.superlike = true')
+            ->setParameter('user', $user)
+            ->orderBy('l.created_at', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

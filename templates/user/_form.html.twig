@@ -1,4 +1,16 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+    <div class="form-group">
+        {{ form_label(form.body, 'Exprimez-vous', {'label_attr': {'class': 'col-sm-2 control-label'}}) }}
+        <div class="col-sm-10">
+            {{ form_widget(form.body, {'attr': {'class': 'form-control', 'placeholder': 'Exprimez-vous'}}) }}
+            {% if form_errors(form.body) %}
+                <span class="help-block text-danger">{{ form_errors(form.body) }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+        </div>
+    </div>
 {{ form_end(form) }}
