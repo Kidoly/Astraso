@@ -33,6 +33,9 @@ class Institution
     #[ORM\OneToMany(targetEntity: Follow::class, mappedBy: 'institution', orphanRemoval: true)]
     private Collection $follows;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?User $Chef = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -126,6 +129,18 @@ class Institution
                 $follow->setInstitution(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getChef(): ?User
+    {
+        return $this->Chef;
+    }
+
+    public function setChef(?User $Chef): static
+    {
+        $this->Chef = $Chef;
 
         return $this;
     }
