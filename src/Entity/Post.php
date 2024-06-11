@@ -58,6 +58,9 @@ class Post
     #[ORM\OneToMany(targetEntity: ImagePost::class, mappedBy: 'post', cascade: ['persist'], orphanRemoval: true)]
     private $imagePosts;
 
+    #[ORM\Column]
+    private ?bool $isValid = null;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -280,6 +283,18 @@ class Post
                 $imagePost->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsValid(): ?bool
+    {
+        return $this->isValid;
+    }
+
+    public function setIsValid(bool $isValid): static
+    {
+        $this->isValid = $isValid;
 
         return $this;
     }
